@@ -1,21 +1,25 @@
 from pymongo import MongoClient
+import redis
+data_feed_path = '/home/raja/Downloads/feeds1/'
+feed_images_path = '/home/raja/Downloads/feed_images/'
+model_path = '/images/new_models/'
 
 # IP and port numbers
 mongo_config = {'host': '127.0.0.1', 'port': 27017}
 redis_config  = {'host': '127.0.0.1', 'port': 6379}
 segmentation_server = {'host': '172.31.22.178', 'port': '8000'}
 classification_server = {'host': '172.31.22.177', 'port': '8000'}
+query_server = {'host': '172.31.22.177', 'port': '8000'}
+aerospike_config = {'hosts': [ ('127.0.0.1', 3000) ],'policies': {'timeout': 5000 }}
 
 # Connections
 mongo_client_ = MongoClient(mongo_config['host'], mongo_config['port'])
 db = mongo_client_['fashion']
 collection = db['products']
-
 imgQ = redis.Redis(host = redis_config['host'], port = redis_config['port'])
 
 invalid_words = ['bathing', 'laptop', 'brief', 'maternity', 'costume', 'keyboard', 'wrap', 'bra', 'belt', 'tanga', 'panty', 'nightwear', 'sandal', 'usb', 'leg warmer', 'sock', 'add', 't-back', 'g-string', 'iphone', 'robe', 'hat', 'toe', 'swim', 'shawl', 'watch', 'shapewear', 'adult', 'child', 'baby', 'monokini', 'stocking', 'ipad', 'corset', 'girdle', 'swimsuit', 'bag', 'bikini', 'lingerie', 'nipple', 'night', 'sleep', 'shoe', 'clamp', 'waist trainer', 'boots', 'sleeping', 'nail', 'poncho', 'shrug', 'tube', 'swimwear', 'one-piece', 'PC', 'kimono', 'finger', 'babies', 'panties', 'ipad cover', 'sleepwear', 'beach wear', 'thong', 'silicone', 'qyt', 'leg support', 'wrap-around', 'Cyber Women Flare Sleeve Lace Patchwork Stretch Pleated Hem Plus Blouse', 'macbook', 'kid', 'box', 'cincher', 'underwear', 'mask', 'beachwear', 'one piece', 'camera', 'pajama', 'bandeau']
-data_feed_path = '/home/raja/Downloads/feeds1/'
-feed_images_path = '/home/raja/Downloads/feed_images/'
+
 feed_list = [
     {
       "website": "lazada",
