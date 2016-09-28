@@ -1,0 +1,127 @@
+from pymongo import MongoClient
+
+# IP and port numbers
+mongo_config = {'host': '127.0.0.1', 'port': 27017}
+redis_config  = {'host': '127.0.0.1', 'port': 6379}
+segmentation_server = {'host': '172.31.22.178', 'port': '8000'}
+classification_server = {'host': '172.31.22.177', 'port': '8000'}
+
+# Connections
+mongo_client_ = MongoClient(mongo_config['host'], mongo_config['port'])
+db = mongo_client_['fashion']
+collection = db['products']
+
+imgQ = redis.Redis(host = redis_config['host'], port = redis_config['port'])
+
+invalid_words = ['bathing', 'laptop', 'brief', 'maternity', 'costume', 'keyboard', 'wrap', 'bra', 'belt', 'tanga', 'panty', 'nightwear', 'sandal', 'usb', 'leg warmer', 'sock', 'add', 't-back', 'g-string', 'iphone', 'robe', 'hat', 'toe', 'swim', 'shawl', 'watch', 'shapewear', 'adult', 'child', 'baby', 'monokini', 'stocking', 'ipad', 'corset', 'girdle', 'swimsuit', 'bag', 'bikini', 'lingerie', 'nipple', 'night', 'sleep', 'shoe', 'clamp', 'waist trainer', 'boots', 'sleeping', 'nail', 'poncho', 'shrug', 'tube', 'swimwear', 'one-piece', 'PC', 'kimono', 'finger', 'babies', 'panties', 'ipad cover', 'sleepwear', 'beach wear', 'thong', 'silicone', 'qyt', 'leg support', 'wrap-around', 'Cyber Women Flare Sleeve Lace Patchwork Stretch Pleated Hem Plus Blouse', 'macbook', 'kid', 'box', 'cincher', 'underwear', 'mask', 'beachwear', 'one piece', 'camera', 'pajama', 'bandeau']
+data_feed_path = '/home/raja/Downloads/feeds1/'
+feed_images_path = '/home/raja/Downloads/feed_images/'
+feed_list = [
+    {
+      "website": "lazada",
+      "countries": [
+        {
+          "name": "malaysia",
+          "feed_url": "http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=my&cat1=%22Fashion%22&cat2=%22Women%22%2C%22Men%22&cat3=%22Clothing%22&price=0&app=0"
+        },
+        {
+          "name": "singapore",
+          "feed_url": "http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=sg&cat1=%22Fashion%22&cat2=%22Men%22%2C%22Women%22&cat3=%22Clothing%22&price=0&app=0"
+        },
+        {
+          "name": "indonesia",
+          "feed_url": "http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=id&cat1=%22Fashion%22&cat2=%22Men%22%2C%22Women%22&cat3=%22Clothing%22&price=0&app=0"
+        }
+      ],
+      "cats": [],
+      "map": [
+        ('image_url', 'picture_url'),
+        ('product_url', 'tracking_link'),
+        ('unique_url', 'tracking_link')
+      ]
+    },
+    {
+      "website": "zalora",
+      "countries": [
+        {
+          "name": "malaysia",
+          "search_word": "ZALORA_MY-Product_Feed.txt.g"
+        },
+        {
+          "name": "singapore",
+          "search_word": "ZALORA_SG-Product_Feed.txt.g"
+        }
+      ],
+      "cats": [
+        "Men>Clothing>T-Shirts",
+        "Men>Clothing>Polo Shirts",
+        "Men>International Brands>Clothing",
+        "Men>Clothing>Shirts",
+        "Men>Clothing>Pants",
+        "Men>Clothing>Outerwear",
+        "Men>Clothing>Jeans",
+        "Men>Clothing>Shorts",
+        "Men>Clothing>Men\"s Clothing",
+        "Men>Sports>Clothing",
+        "Women>Clothing>Playsuits & Jumpsuits",
+        "Women>Clothing>Dresses",
+        "Women>Clothing>Tops",
+        "Women>Clothing>Skirts",
+        "Women>Clothing>Outerwear",
+        "Women>Clothing>Shorts",
+        "Women>International Brands>Clothing",
+        "Women>Clothing>Pants & Leggings",
+        "Women>Korean Fashion>Clothing",
+        "Women>Sports>Clothing",
+        "Women>Clothing>Jeans",
+        "Women>Clothing>Women\"s Clothing",
+        "Women>Clothing>Plus Size",
+        "Women>International Brands>Sports",
+        "Women>Florals>Clothing",
+        "Women>Form-fitting>Clothing",
+        "Women>Rock Chic>Clothing",
+        "Women>Girl Boss>Clothing"
+      ],
+      'map': [
+        ('product_name', 'NAME'),
+        ('currency', 'CURRENCY'),
+        ('product_url', 'BUYURL'),
+        ('image_url', 'IMAGEURL'),
+        ('unique_url', 'IMAGEURL')
+      ]
+    },
+    {
+      "website": "yoox",
+      "countries": [
+        {
+          "name": "malaysia",
+          "affiliate_name": "YOOX.com Malaysia"
+        },
+        {
+          "name": "singapore",
+          "affiliate_name": "YOOX.com Singapore"
+        }
+      ],
+      "cats": [
+        "Apparel & Accessories > Clothing > Outerwear > Coats & Jackets",
+        "Apparel & Accessories > Clothing > Shirts & Tops",
+        "Apparel & Accessories > Clothing > One-Pieces",
+        "Apparel & Accessories > Clothing > Skirts",
+        "Apparel & Accessories > Clothing > Shorts",
+        "Apparel & Accessories > Clothing > Pants",
+        "Apparel & Accessories > Clothing",
+        "Apparel & Accessories > Clothing > Uniforms",
+        "Apparel & Accessories > Clothing > Suits",
+        "Apparel & Accessories > Clothing > Outerwear",
+        "Apparel & Accessories > Clothing > Outerwear > Snow Pants & Suits",
+        "Apparel & Accessories > Clothing > One-Pieces > Jumpsuits & Rompers"
+      ],
+      'map':[
+        ('product_name', 'Name'),
+        ('currency', 'Currency'),
+        ('product_url', 'Url'),
+        ('image_url', 'Image'),
+        ('unique_url', 'Url')
+      ]
+    }
+  ]
