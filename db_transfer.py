@@ -70,8 +70,11 @@ def create_aero_master(_set):
                 pass
             else:
                 bins[k] = product[k]
+ 
         bins['id'] = idx
+        bins.pop('_id')
         client.put(key, bins)
+       
         m[bins['hashedId']] = bins['id']
     with open(model_path + 'annoy_index_files/'+ _set + '/'+ 'hashedIdmap.p', 'wb') as f:
         pickle.dump(m, f)
