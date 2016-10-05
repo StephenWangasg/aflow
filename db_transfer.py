@@ -159,3 +159,9 @@ def reload_server(hour = 4):
         build_annoy_index(set_name_2)
         build_annoy_index_all_filter(set_name_2)
         #publish to restart the server
+
+if __name__ == "__main__":
+	create_aero_master('one')
+	build_annoy_index('one')
+	build_annoy_index_all_filter('one')
+
