@@ -3,11 +3,12 @@ from django.http import JsonResponse
 import redis, ast
 from datetime import datetime
 currency_cache = redis.StrictRedis(host='localhost', port=6379, db=0)
-
+from django import db
 
 def send_response(response):
     response["Access-Control-Allow-Origin"] = '*'
     response["Access-Control-Allow-Headers"] = 'accept,content-type'
+    db.reset_queries()
     return response
 
 

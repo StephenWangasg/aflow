@@ -1,0 +1,30 @@
+#webapp_uwsgi.ini file
+[uwsgi]
+
+# Django-related settings
+# the base directory (full path)
+chdir           = /home/ubuntu/dev/fashion-ingestion/webapp
+pidfile         = /var/tmp/uwsgi.pid
+# Django's wsgi file
+module          = webapp.wsgi
+# the virtualenv (full path)
+#home            = /path/to/virtualenv
+
+# process-related settings
+# master
+master          = true
+# maximum number of worker processes
+processes       = 5
+# the socket (use the full path to be safe
+socket          = /home/ubuntu/dev/webapp.sock
+# ... with appropriate permissions - may be needed
+chmod-socket    = 666
+# clear environment on exit
+vacuum          = true
+
+pythonpath       = ..
+#logto           = /tmp/uwsgi.log
+daemonize        = /tmp/uwsgi.log
+#plugin           = python27
+
+max-requests = 200
