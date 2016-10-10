@@ -1,4 +1,4 @@
-import requests, csv, gzip
+import requests, csv, gzip, urllib, os, socket
 import email, imaplib
 from parsers import parse_csv
 from config import data_feed_path
@@ -51,6 +51,92 @@ def zalora(download_file_path, country_item):
             with gzip.open(download_file_path + '.gz', 'rb') as in_file, open(download_file_path, 'wb') as out_file:
                 out_file.write(in_file.read())
 
+def asos(download_file_path, country_item):
+    header = country_item['prepend_header']
+    url = country_item['feed_url']
+    tmp_file_path = download_file_path + '.tmp.txt'
+    tmp_file_path2 = download_file_path + '.tmp2.txt'
+
+    try:
+        socket.setdefaulttimeout(3600)
+        urllib.urlretrieve(url,download_file_path+'.gz')
+        socket.setdefaulttimeout(None)
+    except:
+        socket.setdefaulttimeout(None)
+
+    with gzip.open(download_file_path + '.gz', 'rb') as in_file, open(tmp_file_path, 'wb') as out_file:
+        out_file.write(in_file.read())
+
+    # remove 1st line and add header
+    with file(tmp_file_path, 'r') as original:
+        original.next()
+        with file(tmp_file_path2, 'w') as modified:
+            modified.write(header)
+            for row in original:
+                modified.write(row)
+
+    # convert to standard quoted csv
+    uniqueIDs = {}
+    with open(tmp_file_path2) as f, open(download_file_path, 'w') as f2:
+        reader = csv.DictReader(f, delimiter='|')
+        columns = reader.fieldnames
+        writer = csv.DictWriter(f2, delimiter=',', quotechar="\"", fieldnames=columns)
+        writer.writeheader()
+        for row in reader:
+            uid = row['image_url']
+            if uid not in uniqueIDs:
+                uniqueIDs[uid] = 0
+                writer.writerow(row)
+
+    if os.path.exists(tmp_file_path):
+        os.remove(tmp_file_path)
+
+    if os.path.exists(tmp_file_path2):
+        os.remove(tmp_file_path2)
+
+
+def farfetch(download_file_path, country_item):
+    header = country_item['prepend_header']
+    url = country_item['feed_url']
+    tmp_file_path = download_file_path + '.tmp.txt'
+    tmp_file_path2 = download_file_path + '.tmp2.txt'
+
+    try:
+        socket.setdefaulttimeout(3600)
+        urllib.urlretrieve(url, download_file_path + '.gz')
+        socket.setdefaulttimeout(None)
+    except:
+        socket.setdefaulttimeout(None)
+
+    with gzip.open(download_file_path + '.gz', 'rb') as in_file, open(tmp_file_path, 'wb') as out_file:
+        out_file.write(in_file.read())
+
+    # remove 1st line and add header
+    with file(tmp_file_path, 'r') as original:
+        original.next()
+        with file(tmp_file_path2, 'w') as modified:
+            modified.write(header)
+            for row in original:
+                modified.write(row)
+
+    # convert to standard quoted csv
+    uniqueIDs = {}
+    with open(tmp_file_path2) as f, open(download_file_path, 'w') as f2:
+        reader = csv.DictReader(f, delimiter='|')
+        columns = reader.fieldnames
+        writer = csv.DictWriter(f2, delimiter=',', quotechar="\"", fieldnames=columns)
+        writer.writeheader()
+        for row in reader:
+            uid = row['image_url']
+            if uid not in uniqueIDs:
+                uniqueIDs[uid] = 0
+                writer.writerow(row)
+
+    if os.path.exists(tmp_file_path):
+        os.remove(tmp_file_path)
+
+    if os.path.exists(tmp_file_path2):
+        os.remove(tmp_file_path2)
 
 def download_and_parse(website, country, country_item, feed_item):
     p = data_feed_path + website + country

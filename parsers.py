@@ -66,6 +66,51 @@ def yoox(row, map_, cats):
         return
     return update_map_price(row, map_, 'Price', 'PriceSale')
 
+def splitCats(cats, sep='|'):
+    cats1 = []
+    cats2 = []
+    currentCats = cats1
+    for c in cats:
+        if c == '|':
+            currentCats = cats2
+        else:
+            currentCats.append(c)
+    return  cats1, cats2
+
+def asos(row, map_, cats):
+    cats1, invalidSecondaryCatWords = splitCats(cats,'|')
+
+    if not b_any(row['primary_cat'] == x for x in cats1):
+        return
+
+    if valid(row['product_name'].lower()):
+        return
+
+    if 'gender' not in row: row['gender'] = -1
+
+    secondaryCategory = row['secondary_cat']
+    if b_any(w in secondaryCategory for w in invalidSecondaryCatWords):
+        return
+
+    return update_map_price(row, map_, 'retail_price', 'sale_price')
+
+
+def farfetch(row, map_, cats):
+    cats1, invalidSecondaryCatWords = splitCats(cats, '|')
+
+    if not b_any(row['primary_cat'] == x for x in cats1):
+        return
+
+    if valid(row['product_name'].lower()):
+        return
+
+    if 'gender' not in row: row['gender'] = -1
+
+    secondaryCategory = row['secondary_cat']
+    if b_any(w in secondaryCategory for w in invalidSecondaryCatWords):
+        return
+
+    return update_map_price(row, map_, 'retail_price', 'sale_price')
 
 def parse_csv(inputfile, outputfile, website, country, map_, cats):
     keys = ['product_name', 'gender', 'price', 'disc_price', 'display_price', 'currency', 'product_url', 'image_url', 'unique_url']
