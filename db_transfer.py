@@ -41,7 +41,7 @@ def build_annoy_index(_set):
         for category in categories.keys():
             for location in locations:
                 query = client.query(namespace, _set)
-                query.select('gender', 'color'+layer, 'id')
+                query.select('gender', 'color'+layer, 'id', 'location')
                 query.where( p.equals('subCat', category) )
                 t = AnnoyIndex(layer_dimension)
                 count = 0
@@ -80,7 +80,7 @@ def build_annoy_index_all_filter(_set):
     import aerospike.predicates as p
     for gender_val, category_val, attribute, attribute_val, attribute_len, location in get_attribute_values():
         query = client.query(namespace, _set)
-        query.select('gender', attribute + layer, attribute, 'id')
+        query.select('gender', attribute + layer, attribute, 'id', 'location')
         query.where(p.equals('subCat', category_val))
 
         t = AnnoyIndex(attribute_len)
@@ -118,7 +118,7 @@ def reload_server(hour = 4):
         #publish to restart the server
 
 if __name__ == "__main__":
-	#create_aero_master('one')
-	build_annoy_index('one')
-	build_annoy_index_all_filter('one')
+#    create_aero_master('one')
+    build_annoy_index('one')
+    build_annoy_index_all_filter('one')
 
