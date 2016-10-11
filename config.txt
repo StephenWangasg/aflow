@@ -1,8 +1,8 @@
 from pymongo import MongoClient
 import redis
-data_feed_path = '/home/raja/Downloads/feeds1/'
-feed_images_path = '/home/raja/Downloads/feed_images/'
-model_path = '/images/new_models/'
+data_feed_path = '/images/models/feeds/'
+feed_images_path = '/images/models/feed_images/'
+model_path = '/images/models/'
 
 # IP and port numbers
 mongo_config = {'host': '127.0.0.1', 'port': 27017}
@@ -10,7 +10,7 @@ redis_config  = {'host': '127.0.0.1', 'port': 6379}
 segmentation_server = {'host': '172.31.22.178', 'port': '8000'}
 classification_server = {'host': '172.31.22.177', 'port': '8000'}
 query_server = {'host': '172.31.22.177', 'port': '8000'}
-aerospike_config = {'hosts': [ ('127.0.0.1', 3000) ],'policies': {'timeout': 5000 }}
+aerospike_config = {'hosts': [ ('172.31.25.128', 3000) ],'policies': {'timeout': 5000 }}
 
 # Connections
 mongo_client_ = MongoClient(mongo_config['host'], mongo_config['port'])

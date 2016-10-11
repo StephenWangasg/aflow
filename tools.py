@@ -13,7 +13,7 @@ def download_image(url_path):
     except (KeyboardInterrupt, SystemExit):
         raise
     except Exception as e:
-#        print '"', url, '"',  e
+        print '"', url, '"',  e
         pass
     return
 

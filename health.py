@@ -39,9 +39,10 @@ def count_images_downloaded():
 
 def download_other_images():
     image_paths = []
-    for row in collection.find({'extracted':False}, {'image_path': 1, 'image_url': 1}):
-        if not os.path.isfile(row['image_path']):
-            image_paths.append((row['image_url'], row['image_path']))
+    for row in collection.find({'extracted':False}, {'image_name': 1, 'image_url': 1}):
+        image_path = feed_images_path + row['image_name']
+        if not os.path.isfile(image_path):
+            image_paths.append((row['image_url'], image_path))
     print len(image_paths)
     pool = eventlet.GreenPool()
     for _ in pool.imap(download_image, image_paths):
@@ -66,6 +67,6 @@ def insert_redis():
 if __name__ == '__main__':
 
     # print "Is db in sync with latest feeds ? ", is_db_sync_with_latest_feed()
-    count_images_downloaded()
+    #count_images_downloaded()
     download_other_images()
     count_images_downloaded()
