@@ -1,15 +1,15 @@
 from pymongo import MongoClient
 import redis
-data_feed_path = '/home/raja/Downloads/feeds1/'
-feed_images_path = '/home/raja/Downloads/feed_images/'
-model_path = '/images/new_models/'
+data_feed_path = '/home/xuejie/dev/feeds1/'
+feed_images_path = '/home/xuejie/dev/feed_images/'
+model_path = '/home/xuejie/dev/models/'
 
 # IP and port numbers
 mongo_config = {'host': '127.0.0.1', 'port': 27017}
 redis_config  = {'host': '127.0.0.1', 'port': 6379}
-segmentation_server = {'host': '172.31.22.178', 'port': '8000'}
-classification_server = {'host': '172.31.22.177', 'port': '8000'}
-query_server = {'host': '172.31.22.177', 'port': '8000'}
+segmentation_server = {'host': '127.0.0.1', 'port': '8000'}
+classification_server = {'host': '127.0.0.1', 'port': '8000'}
+query_server = {'host': '127.0.0.1', 'port': '8000'}
 aerospike_config = {'hosts': [ ('127.0.0.1', 3000) ],'policies': {'timeout': 5000 }}
 
 # Connections
@@ -164,11 +164,15 @@ feed_list = [
         }
       ],
       "cats": [
-        'Clothing', 'Vintage & Archive',
+        'Clothing & Accessories',
         '|',
-        'Caps', 'Wallets', 'Gloves', 'Hats', 'Bags', 'Accessories', 'Hair', 'Shoes', 'Sandals', 'Trainers', 'Gifts',
-        'Sunglasses', 'Underwear', 'Swimming', 'Bikinis', 'Swimsuits', 'Swimwear', 'Socks', 'Accessories', 'Backpacks',
-        'Jewelry', 'Luggage', 'Lingerie/Underwear', 'Belts', 'Bracelets', 'Earrings', 'Necklaces', 'Jewellery', 'Lipsticks', 'Conditioners'
+        'Accessories', 'Accessory', 'Anklets', 'Backpacks', 'Bags', 'Belts', 'Boots', 'Bikinis', 'Bracelets', 'Bras', 'Brogues', 'Ballerinas', 'Biometric', 'Bath', 'Conditioner', 'Candles', 'Bedding', 'Barware', 'Artwork', 'Ashtrays',
+        'Buckles', 'Braces', 'Bridal', 'Brooches', 'Card', 'Clips', 'Claw', 'Baby', 'Capes', 'Caps', 'Charms', 'Conditioners', 'Crib', 'Earrings', 'Espadrilles', 'Eye', 'Face', 'Facial',
+        'Flip Flops', 'Gifts', 'Gloves', 'Gloves', 'Holdalls', 'Hi-Tops', 'Hair', 'Hair', 'Handbags', 'Hats', 'Headbands', 'Headwear', 'Jewellery', 'Jewelry', 'Loafers', 'Lip', 'Lotion',
+        'Lingerie', 'Underwear', 'Lipsticks', 'Luggage', 'Key Chains','Kimono', 'Mittens', 'Necklaces', 'Mules', 'Pumps', 'Neckties', 'Night', 'Oxfords', 'Phone', 'Makeup',
+        'Purses', 'Pendants', 'Pins', 'Rings', 'Pre-Walker', 'Sandals', 'Slippers', 'Sandals', 'Scarves', 'Snoods', 'Shoes', 'Socks', 'Shoelaces', 'Sneakers', 'Skin', 'Shampoo', 'Vision', 'Shaving',
+        'Sunglasses', 'Swimming', 'Swimsuits', 'Swimwear', 'Toe', 'Toddler', 'Trainers', 'Underwear', 'Wallets', 'Warmers',
+        'Watches'
       ],
       'map':[
         ('product_name', 'product_name'),

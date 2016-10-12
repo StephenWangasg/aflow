@@ -97,7 +97,7 @@ def asos(row, map_, cats):
 
 def farfetch(row, map_, cats):
     cats1, invalidSecondaryCatWords = splitCats(cats, '|')
-
+    
     if not b_any(row['primary_cat'] == x for x in cats1):
         return
 
@@ -107,7 +107,7 @@ def farfetch(row, map_, cats):
     if 'gender' not in row: row['gender'] = -1
 
     secondaryCategory = row['secondary_cat']
-    if b_any(w in secondaryCategory for w in invalidSecondaryCatWords):
+    if secondaryCategory.strip() == '' or b_any(w in secondaryCategory for w in invalidSecondaryCatWords):
         return
 
     return update_map_price(row, map_, 'retail_price', 'sale_price')
@@ -123,7 +123,6 @@ def parse_csv(inputfile, outputfile, website, country, map_, cats):
             if type(parsed_row) == dict:
                 filtered_row = [parsed_row[your_key] for your_key in keys]
                 writer.writerow(filtered_row)
-
 
 if __name__ == '__main__':
     pass
