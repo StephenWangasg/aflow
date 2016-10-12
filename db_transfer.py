@@ -102,23 +102,27 @@ def build_annoy_index_all_filter(_set):
         print "Time : ", time.time() - start, " Count : ", count
 
 
+def load_db_create_index(_set_):
+    create_aero_master(_set_)
+    build_annoy_index(_set_)
+    build_annoy_index_all_filter(_set_)
+
+def get_set_load_index():
+    st = '/set'
+    s = Server(query_server['host'], query_server['port'])
+    set_name = jsons.return_response(st)
+    if set_name == 'one':
+        load_db_create_index('two')
+    elif set_name == 'two':
+        load_db_create_index('two')
+    else:
+        print "something wrong"
+
 def reload_server(hour = 4):
     ds = DayScheduler(hour)
     for d in ds.is_time_to_run():
-        st = '/set'
-        s = Server(query_server['host'], query_server['port'])
-        set_name = s.return_response(st)
-
-        # check if create on a different set or current
-        set_name_2 = 'two' if set_name == 'one' else 'one'
-
-        create_aero_master(set_name_2)
-        build_annoy_index(set_name_2)
-        build_annoy_index_all_filter(set_name_2)
-        #publish to restart the server
+        pass
 
 if __name__ == "__main__":
-#    create_aero_master('one')
-    build_annoy_index('one')
-    build_annoy_index_all_filter('one')
+
 
