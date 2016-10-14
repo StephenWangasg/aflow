@@ -1,7 +1,7 @@
 import csv, sys, shutil, uuid, eventlet, os
 from downloaders import download_and_parse
 from config import feed_list, data_feed_path, feed_images_path
-from tools import download_image, get_hasded_st, scheduler
+from tools import download_image, get_hashed_st, scheduler
 from config import collection, imgQ
 csv.field_size_limit(sys.maxsize)
 from collections import Counter
@@ -31,17 +31,19 @@ def is_db_sync_with_latest_feed():
 def count_images_downloaded():
     db_images_count = collection.find().count()-0
     count = Counter()
-    for product in collection.find({}, {'image_path':1, 'site':1, 'location':1}).limit(db_images_count):
-        if not os.path.isfile(product['image_path']):
-            count[product['site']+product['location']] += 1
+    for row in collection.find({}, {'image_name':1, 'site':1, 'location':1}).limit(db_images_count):
+        image_path = feed_images_path + row['image_name']
+        if not os.path.isfile(row['image_path']):
+            count[row['site']+row['location']] += 1
     print db_images_count, count
 
 
 def download_other_images():
     image_paths = []
-    for row in collection.find({'extracted':False}, {'image_path': 1, 'image_url': 1}):
-        if not os.path.isfile(row['image_path']):
-            image_paths.append((row['image_url'], row['image_path']))
+    for row in collection.find({'extracted':False}, {'image_name': 1, 'image_url': 1}):
+        image_path = feed_images_path + row['image_name']
+        if not os.path.isfile(image_path):
+            image_paths.append((row['image_url'], image_path))
     print len(image_paths)
     pool = eventlet.GreenPool()
     for _ in pool.imap(download_image, image_paths):
@@ -58,14 +60,15 @@ def delete_redis():
 
 
 def insert_redis():
-    for product in collection.find({'extracted': False}, {'image_path': 1}):
-        if os.path.isfile(product['image_path']):
-            imgQ.sadd("insertQ", product["image_path"])
+    for row in collection.find({'extracted': False}, {'image_name': 1}):
+        image_path = feed_images_path + row['image_name']
+        if os.path.isfile(row['image_path']):
+            imgQ.sadd("insertQ", row["image_path"])
 
 
 if __name__ == '__main__':
 
     # print "Is db in sync with latest feeds ? ", is_db_sync_with_latest_feed()
-    count_images_downloaded()
+    #count_images_downloaded()
     download_other_images()
     count_images_downloaded()
