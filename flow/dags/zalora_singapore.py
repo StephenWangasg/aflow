@@ -98,7 +98,7 @@ t4 = PythonOperator(
     python_callable=delete_old_urls,
     op_kwargs=op_kwargs,
     dag=dag)
-'''
+
 t5 = PythonOperator(
     task_id='insert',
     provide_context=True,
@@ -119,7 +119,11 @@ t7 = PythonOperator(
     python_callable=copy_current2previous,
     op_kwargs=op_kwargs,
     dag=dag)
-'''
+
 t2.set_upstream(t1)
 t3.set_upstream(t2)
 t4.set_upstream(t3)
+
+t5.set_upstream(t3)
+t6.set_upstream(t5)
+t7.set_upstream(t6)

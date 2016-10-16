@@ -25,15 +25,15 @@ def download_image(url_path):
 
 
 def delete_old_urls(**kwargs):
-    pprint(kwargs)
     ti = kwargs['ti']
-    print ti
-    delete_urls = ti.xcom_pull(task_ids='get_diff_urls')
+    delete_urls = ti.xcom_pull(key='delete_urls', task_ids='get_diff_urls')
     print delete_urls
     for delete_url in list(delete_urls):
         collection.remove({'unique_url': delete_url})
 
 def download_and_queue(**kwargs):
+    ti = kwargs['ti']
+    image_paths = ti.xcom_pull(key=None, task_ids='insert')
     pool = eventlet.GreenPool()
     for _ in pool.imap(download_image, image_paths):
         pass
@@ -44,6 +44,8 @@ def insert(**kwargs):
     current_parsed_path = kwargs['current_parsed_csv']
     website = kwargs['website']
     country = kwargs['country']
+    ti = kwargs['ti']
+    new_urls = ti.xcom_pull(key='new_urls', task_ids='get_diff_urls')
     new_urls = set(list(new_urls)[:200])  # remove
     if len(new_urls) > 0:
         mapped_rows, image_paths = [], []
@@ -82,10 +84,5 @@ def get_diff_urls(**kwargs):
     delete_urls = set(previous_product_urls) - set(current_product_urls)
     new_urls = set(current_product_urls) - set(previous_product_urls)
     print "To delete : ", len(delete_urls), " To insert : ", len(new_urls)
-    delete_urls = ['d']
     kwargs['ti'].xcom_push(key='delete_urls', value=delete_urls)
-
-
-
-
-
+    kwargs['ti'].xcom_push(key='new_urls', value=delete_urls)
