@@ -1,0 +1,18 @@
+from pymongo import MongoClient
+import redis
+data_feed_path = '/images/models/feeds/'
+feed_images_path = '/images/models/feed_images/'
+model_path = '/images/models/'
+
+# IP and port numbers
+mongo_config = {'host': '127.0.0.1', 'port': 27017}
+redis_config  = {'host': '127.0.0.1', 'port': 6379}
+segmentation_server = {'host': '172.31.2.224', 'port': '8000'}
+classification_server = {'host': '172.31.15.49', 'port': '8000'}
+query_server = {'host': '172.31.22.177', 'port': '8000'}
+aerospike_config = {'hosts': [ ('172.31.25.128', 3000) ],'policies': {'timeout': 5000 }}
+
+# Connections
+mongo_client_ = MongoClient(mongo_config['host'], mongo_config['port'])
+db = mongo_client_['fashion']
+collection = db['products']

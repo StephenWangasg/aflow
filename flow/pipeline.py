@@ -26,7 +26,7 @@ def insert_new_urls(**kwargs):
     country = kwargs['country']
     ti = kwargs['ti']
     new_urls = ti.xcom_pull(key='new_urls', task_ids='get_diff_urls')
-    new_urls = set(list(new_urls)[:200])  # remove
+#    new_urls = set(list(new_urls)[:200])  # remove
     image_paths = []
     if len(new_urls) > 0:
         for row in csv.DictReader(open(current_parsed_path, 'rb'), delimiter='\t'):

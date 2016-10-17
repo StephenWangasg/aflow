@@ -1,6 +1,6 @@
 from config import model_path, collection
 import cPickle as pickle
-from tools import Server, scheduler
+from utils import Server
 import subprocess, time
 from annoy import AnnoyIndex
 from data import namespace, client, categories, layer_dimension, layer, attribute_tree, inv_attribute_map, attribute_lengths, locations
@@ -118,11 +118,7 @@ def get_set_load_index():
     else:
         print "something wrong"
 
-def reload_server(hour = 4):
-    ds = DayScheduler(hour)
-    for d in ds.is_time_to_run():
-        pass
 
 if __name__ == "__main__":
-
+    pass
 
