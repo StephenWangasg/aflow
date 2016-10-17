@@ -8,7 +8,7 @@ from airflow.operators.python_operator import PythonOperator
 from flow.downloaders.utils import lazada_download
 from flow.parsers.utils import parse_write
 from flow.config import data_feed_path
-from flow.utils import get_diff_urls, delete_old_urls, insert_new_urls, download_images, copy_current2previous, feature_extraction
+from flow.pipeline import get_diff_urls, delete_old_urls, insert_new_urls, download_images, copy_current2previous, feature_extraction
 
 
 default_args = {
