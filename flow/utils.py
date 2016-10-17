@@ -1,6 +1,6 @@
-import csv, eventlet, uuid, hashlib, urllib2, shutil
-from flow.config import collection, imgQ, feed_images_path
-from pprint import pprint
+import hashlib, urllib2
+import requests, ast
+
 
 def get_hashed_st(st):
     m = hashlib.md5()
@@ -15,74 +15,50 @@ def download_image(url_path):
         img_data = urllib2.urlopen(url, timeout=30).read()
         with open(path, 'wb') as f:
             f.write(img_data)
-        imgQ.sadd("insertQ", path)
     except (KeyboardInterrupt, SystemExit):
         raise
     except Exception as e:
         print '"', url, '"',  e
-        pass
     return
 
 
-def delete_old_urls(**kwargs):
-    ti = kwargs['ti']
-    delete_urls = ti.xcom_pull(key='delete_urls', task_ids='get_diff_urls')
-    print delete_urls
-    for delete_url in list(delete_urls):
-        collection.remove({'unique_url': delete_url})
+class Server:
+    def __init__(self, _ip, port):
+        self.IP = _ip
+        self.port = port
 
-def download_and_queue(**kwargs):
-    ti = kwargs['ti']
-    image_paths = ti.xcom_pull(key=None, task_ids='insert')
-    pool = eventlet.GreenPool()
-    for _ in pool.imap(download_image, image_paths):
-        pass
-    #for (_, img_path) in image_paths:
-    #   imgQ.sadd("insertQ", img_path)
-
-def insert(**kwargs):
-    current_parsed_path = kwargs['current_parsed_csv']
-    website = kwargs['website']
-    country = kwargs['country']
-    ti = kwargs['ti']
-    new_urls = ti.xcom_pull(key='new_urls', task_ids='get_diff_urls')
-    new_urls = set(list(new_urls)[:200])  # remove
-    if len(new_urls) > 0:
-        mapped_rows, image_paths = [], []
-
-        for row in csv.DictReader(open(current_parsed_path, 'rb'), delimiter='\t'):
-            url = row["unique_url"]
-            if url in new_urls:
-                row.update({'extracted': False, 'location': country, 'site': website})
-                row['image_name'] = str(uuid.uuid1()) + '.jpg'
-                row['image_path'] = feed_images_path + row['image_name']
-                row['hashedId'] = get_hashed_st(row['image_url'])
-                collection.insert(row)
-                image_paths.append((row['image_url'], row['image_path']))
-        return image_paths
+    def return_response(self, st):
+        query_url = 'http://' + self.IP + ':' + self.port + st
+        response = requests.request("GET", query_url).text
+        return ast.literal_eval(response)
 
 
-def copy_current2previous(**kwargs):
-    current_parsed_path = kwargs['current_parsed_csv']
-    previous_parsed_path = kwargs['previous_parsed_csv']
-    shutil.copyfile(current_parsed_path, previous_parsed_path)
+class SegmentationServer(Server):
+    def __init__(self, _ip, port):
+        Server.__init__(self, _ip, port)
+
+    def get_detections(self, img_path):
+        st = '/segment?img_path=' + img_path
+        return self.return_response(st)
 
 
-def get_diff_urls(**kwargs):
-    current_parsed_path = kwargs['current_parsed_csv']
-    previous_parsed_path = kwargs['previous_parsed_csv']
+class ClassificationServer(Server):
+    def __init__(self, _ip, port):
+        Server.__init__(self, _ip, port)
 
-    current_csv = csv.DictReader(open(current_parsed_path, 'rb'), delimiter='\t')
-    current_product_urls = [_['unique_url'] for _ in current_csv]
+    def get_attributes(self, img_path, box):
+        st = '/classify?img_path=' + img_path + '&x1=' + str(box['x1'])+ '&x2=' + str(box['x2'])+ '&y1=' + str(box['y1'])+ '&y2=' + str(box['y2'])
+        return self.return_response(st)
 
-    try:
-        previous_csv = csv.DictReader(open(previous_parsed_path, 'rb'), delimiter='\t')
-        previous_product_urls = [_['unique_url'] for _ in previous_csv]
-    except IOError:
-        previous_product_urls = []
 
-    delete_urls = set(previous_product_urls) - set(current_product_urls)
-    new_urls = set(current_product_urls) - set(previous_product_urls)
-    print "To delete : ", len(delete_urls), " To insert : ", len(new_urls)
-    kwargs['ti'].xcom_push(key='delete_urls', value=delete_urls)
-    kwargs['ti'].xcom_push(key='new_urls', value=delete_urls)
+class ProductFeature:
+    def __init__(self, segmentation_server, classification_server):
+        self.segmentor = SegmentationServer(segmentation_server['host'], segmentation_server['port'])
+        self.classifier = ClassificationServer(classification_server['host'], classification_server['port'])
+
+    def get_feature(self, query_img_path):
+        s1 = self.segmentor.get_detections(query_img_path)
+        box = s1['detections'][0]['coord']
+        print box
+        attributes = self.classifier.get_attributes(query_img_path, box)
+        return attributes

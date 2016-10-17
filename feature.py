@@ -1,7 +1,7 @@
 import time
 from config import segmentation_server, classification_server, imgQ, collection
 from requests.exceptions import ConnectionError
-from tools import ProductFeature
+from tools import ProductFeaturel
 
 def redis_to_mongo():
     Features = ProductFeature(segmentation_server, classification_server)

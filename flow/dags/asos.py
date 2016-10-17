@@ -5,7 +5,7 @@ sys.path.insert(0, flow_folder)
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.operators.python_operator import PythonOperator
-from flow.downloaders.utils import zalora_download
+from flow.downloaders.utils import raukuten_download
 from flow.parsers.utils import parse_write
 from flow.config import data_feed_path
 from flow.pipeline import get_diff_urls, delete_old_urls, insert_new_urls, download_images, copy_current2previous, feature_extraction
@@ -22,10 +22,10 @@ default_args = {
     'retry_delay': timedelta(minutes=30),
 }
 
-dag = DAG('zalora_singapore', default_args=default_args)
+dag = DAG('asos', default_args=default_args)
 
-website = 'zalora'
-country = 'singapore'
+website = 'asos'
+country = 'global'
 p = data_feed_path + website + country
 
 op_kwargs = {
@@ -34,55 +34,34 @@ op_kwargs = {
     'previous_parsed_csv': p + 'previous.csv',
     'website': website,
     'country': country,
-    "search_word": "ZALORA_SG-Product_Feed.txt.g",
+    "affiliate_name": "ASOS",
+    "feed_url": "ftp://iQNECT:n39PzPcw@aftp.linksynergy.com/37863_3301502_mp.txt.gz",
+    "prepend_header": "product_id|product_name|sku|primary_cat|secondary_cat|product_url|image_url|c8|c9|c10|c11|c12|sale_price|retail_price|c15|c16|c17|c18|c19|c20|c21|c22|c23|c24|c25|currency|c27|c28|c29|c30|c31|c32|c33|c34|c35|c36|c37|c38\n",
+
+    "cats": [
+        'All-In-One', 'Knitwear', 'Mens', 'Tops', 'Trousers', 'Womens', 'Mens Jackets', 'Womens Jackets', 'Womens Coats', 'Mens Coats', '|',
+        'Caps', 'Wallets', 'Gloves', 'Hats', 'Bags', 'Accessories', 'Hair', 'Shoes', 'Sandals', 'Trainers', 'Gifts',
+        'Sunglasses', 'Underwear', 'Swimming', 'Bikinis', 'Swimsuits', 'Swimwear', 'Socks', 'Accessories', 'Backpacks', 'Jewelry', 'Luggage',
+        'Lingerie/Underwear', 'Belts', 'Bracelets', 'Earrings', 'Necklaces', 'Jewellery', 'Lipsticks', 'Conditioners'
+        ],
     'map': [
-        ('product_name', 'NAME'),
-        ('currency', 'CURRENCY'),
-        ('product_url', 'BUYURL'),
-        ('image_url', 'IMAGEURL'),
-        ('unique_url', 'IMAGEURL')
-      ],
-    'cats': [
-        "Men>Clothing>T-Shirts",
-        "Men>Clothing>Polo Shirts",
-        "Men>International Brands>Clothing",
-        "Men>Clothing>Shirts",
-        "Men>Clothing>Pants",
-        "Men>Clothing>Outerwear",
-        "Men>Clothing>Jeans",
-        "Men>Clothing>Shorts",
-        "Men>Clothing>Men\"s Clothing",
-        "Men>Sports>Clothing",
-        "Women>Clothing>Playsuits & Jumpsuits",
-        "Women>Clothing>Dresses",
-        "Women>Clothing>Tops",
-        "Women>Clothing>Skirts",
-        "Women>Clothing>Outerwear",
-        "Women>Clothing>Shorts",
-        "Women>International Brands>Clothing",
-        "Women>Clothing>Pants & Leggings",
-        "Women>Korean Fashion>Clothing",
-        "Women>Sports>Clothing",
-        "Women>Clothing>Jeans",
-        "Women>Clothing>Women\"s Clothing",
-        "Women>Clothing>Plus Size",
-        "Women>International Brands>Sports",
-        "Women>Florals>Clothing",
-        "Women>Form-fitting>Clothing",
-        "Women>Rock Chic>Clothing",
-        "Women>Girl Boss>Clothing"
-      ]
+        ('product_name', 'product_name'),
+        ('currency', 'currency'),
+        ('product_url', 'product_url'),
+        ('image_url', 'image_url'),
+        ('unique_url', 'image_url')
+        ]
 }
 
 t1 = PythonOperator(
-    task_id='download_zalora_singapore',
+    task_id='download_asos',
     provide_context=True,
-    python_callable=zalora_download,
+    python_callable=raukuten_download,
     op_kwargs=op_kwargs,
     dag=dag)
 
 t2 = PythonOperator(
-    task_id='parse_zalora_singapore',
+    task_id='parse_asos',
     provide_context=True,
     python_callable=parse_write,
     op_kwargs=op_kwargs,

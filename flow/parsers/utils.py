@@ -18,6 +18,7 @@ def zalora(row, map_, cats):
         return
     return update_map_price(row, map_, 'PRICE', 'SALEPRICE')
 
+
 def get_prices(price, price2):
     try:
         p1 = float(price)
@@ -38,6 +39,69 @@ def update_map_price(row, map_, price_key, price2_key):
     row.update(prices)
     return row
 
+
+def yoox(row, map_, cats):
+    if not b_any(row['Category'] == x for x in cats):
+        return
+    if valid(row['Name'].lower()):
+        return
+    if row['Gender'] == 'female' or row['Gender'] == 'male':
+        row['gender'] = row['Gender']
+    else:
+        return
+    return update_map_price(row, map_, 'Price', 'PriceSale')
+
+
+def lazada(row, map_, cats=None):
+    if row['Category lv3'] != 'Clothing':
+        return
+    if valid(row['product_name'].lower()):
+        return
+    if row['Category lv2'] == 'Women':
+        row['gender'] = 'female'
+    elif row['Category lv2'] == 'Men':
+        row['gender'] = 'male'
+    else:
+        return
+    return update_map_price(row, map_, 'sale_price', 'discounted_price')
+
+
+def splitCats(cats, sep='|'):
+    cats1 = []
+    cats2 = []
+    currentCats = cats1
+    for c in cats:
+        if c == '|':
+            currentCats = cats2
+        else:
+            currentCats.append(c)
+    return cats1, cats2
+
+
+def asos(row, map_, cats):
+    cats1, invalidSecondaryCatWords = splitCats(cats, '|')
+    if not b_any(row['primary_cat'] == x for x in cats1):
+        return
+    if valid(row['product_name'].lower()):
+        return
+    if 'gender' not in row: row['gender'] = -1
+    secondaryCategory = row['secondary_cat']
+    if b_any(w in secondaryCategory for w in invalidSecondaryCatWords):
+        return
+    return update_map_price(row, map_, 'retail_price', 'sale_price')
+
+
+def farfetch(row, map_, cats):
+    cats1, invalidSecondaryCatWords = splitCats(cats, '|')
+    if not b_any(row['primary_cat'] == x for x in cats1):
+        return
+    if valid(row['product_name'].lower()):
+        return
+    if 'gender' not in row: row['gender'] = -1
+    secondaryCategory = row['secondary_cat']
+    if secondaryCategory.strip() == '' or b_any(w in secondaryCategory for w in invalidSecondaryCatWords):
+        return
+    return update_map_price(row, map_, 'retail_price', 'sale_price')
 
 def parse_write(**kwargs):
     inputfile = kwargs['download_file']

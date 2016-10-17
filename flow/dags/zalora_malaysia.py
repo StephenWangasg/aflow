@@ -22,10 +22,10 @@ default_args = {
     'retry_delay': timedelta(minutes=30),
 }
 
-dag = DAG('zalora_singapore', default_args=default_args)
+dag = DAG('zalora_malaysia', default_args=default_args)
 
 website = 'zalora'
-country = 'singapore'
+country = 'malaysia'
 p = data_feed_path + website + country
 
 op_kwargs = {
@@ -34,7 +34,7 @@ op_kwargs = {
     'previous_parsed_csv': p + 'previous.csv',
     'website': website,
     'country': country,
-    "search_word": "ZALORA_SG-Product_Feed.txt.g",
+    "search_word": "ZALORA_MY-Product_Feed.txt.g",
     'map': [
         ('product_name', 'NAME'),
         ('currency', 'CURRENCY'),
@@ -75,14 +75,13 @@ op_kwargs = {
 }
 
 t1 = PythonOperator(
-    task_id='download_zalora_singapore',
-    provide_context=True,
+    task_id='download_zalora_malaysia',
     python_callable=zalora_download,
     op_kwargs=op_kwargs,
     dag=dag)
 
 t2 = PythonOperator(
-    task_id='parse_zalora_singapore',
+    task_id='parse_zalora_malaysia',
     provide_context=True,
     python_callable=parse_write,
     op_kwargs=op_kwargs,
