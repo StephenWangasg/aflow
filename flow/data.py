@@ -13,8 +13,8 @@ def get_set_name():
 
 
 set_ = get_set_name()
-locations = ['singapore', 'indonesia', 'malaysia']
-sites = ['zalora','yoox', 'lazada']
+locations = ['singapore', 'indonesia', 'malaysia', 'global']
+sites = ['zalora','yoox', 'lazada', 'asos', 'farfetch']
 
 client = aerospike.client(aerospike_config).connect()
 namespace = 'fashion'
