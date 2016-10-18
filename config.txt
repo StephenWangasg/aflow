@@ -1,0 +1,185 @@
+from pymongo import MongoClient
+import redis
+data_feed_path = '/images/models/feeds/'
+feed_images_path = '/images/models/feed_images/'
+model_path = '/images/models/'
+
+# IP and port numbers
+mongo_config = {'host': '127.0.0.1', 'port': 27017}
+redis_config  = {'host': '127.0.0.1', 'port': 6379}
+segmentation_server = {'host': '172.31.22.178', 'port': '8000'}
+classification_server = {'host': '172.31.22.177', 'port': '8000'}
+query_server = {'host': '172.31.22.177', 'port': '8000'}
+aerospike_config = {'hosts': [ ('172.31.25.128', 3000) ],'policies': {'timeout': 5000 }}
+
+# Connections
+mongo_client_ = MongoClient(mongo_config['host'], mongo_config['port'])
+db = mongo_client_['fashion']
+collection = db['products']
+imgQ = redis.Redis(host = redis_config['host'], port = redis_config['port'])
+
+invalid_words = ['bathing', 'laptop', 'brief', 'maternity', 'costume', 'keyboard', 'wrap', 'bra', 'belt', 'tanga', 'panty', 'nightwear', 'sandal', 'usb', 'leg warmer', 'sock', 'add', 't-back', 'g-string', 'iphone', 'robe', 'hat', 'toe', 'swim', 'shawl', 'watch', 'shapewear', 'adult', 'child', 'baby', 'monokini', 'stocking', 'ipad', 'corset', 'girdle', 'swimsuit', 'bag', 'bikini', 'lingerie', 'nipple', 'night', 'sleep', 'shoe', 'clamp', 'waist trainer', 'boots', 'sleeping', 'nail', 'poncho', 'shrug', 'tube', 'swimwear', 'one-piece', 'PC', 'kimono', 'finger', 'babies', 'panties', 'ipad cover', 'sleepwear', 'beach wear', 'thong', 'silicone', 'qyt', 'leg support', 'wrap-around', 'Cyber Women Flare Sleeve Lace Patchwork Stretch Pleated Hem Plus Blouse', 'macbook', 'kid', 'box', 'cincher', 'underwear', 'mask', 'beachwear', 'one piece', 'camera', 'pajama', 'bandeau', 'underpants']
+
+feed_list = [
+    {
+      "website": "lazada",
+      "countries": [
+        {
+          "name": "malaysia",
+          "feed_url": "http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=my&cat1=%22Fashion%22&cat2=%22Women%22%2C%22Men%22&cat3=%22Clothing%22&price=0&app=0"
+        },
+        {
+          "name": "singapore",
+          "feed_url": "http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=sg&cat1=%22Fashion%22&cat2=%22Men%22%2C%22Women%22&cat3=%22Clothing%22&price=0&app=0"
+        },
+        {
+          "name": "indonesia",
+          "feed_url": "http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=id&cat1=%22Fashion%22&cat2=%22Men%22%2C%22Women%22&cat3=%22Clothing%22&price=0&app=0"
+        }
+      ],
+      "cats": [],
+      "map": [
+        ('image_url', 'picture_url'),
+        ('product_url', 'tracking_link'),
+        ('unique_url', 'tracking_link')
+      ]
+    },
+    {
+      "website": "zalora",
+      "countries": [
+        {
+          "name": "malaysia",
+          "search_word": "ZALORA_MY-Product_Feed.txt.g"
+        },
+        {
+          "name": "singapore",
+          "search_word": "ZALORA_SG-Product_Feed.txt.g"
+        }
+      ],
+      "cats": [
+        "Men>Clothing>T-Shirts",
+        "Men>Clothing>Polo Shirts",
+        "Men>International Brands>Clothing",
+        "Men>Clothing>Shirts",
+        "Men>Clothing>Pants",
+        "Men>Clothing>Outerwear",
+        "Men>Clothing>Jeans",
+        "Men>Clothing>Shorts",
+        "Men>Clothing>Men\"s Clothing",
+        "Men>Sports>Clothing",
+        "Women>Clothing>Playsuits & Jumpsuits",
+        "Women>Clothing>Dresses",
+        "Women>Clothing>Tops",
+        "Women>Clothing>Skirts",
+        "Women>Clothing>Outerwear",
+        "Women>Clothing>Shorts",
+        "Women>International Brands>Clothing",
+        "Women>Clothing>Pants & Leggings",
+        "Women>Korean Fashion>Clothing",
+        "Women>Sports>Clothing",
+        "Women>Clothing>Jeans",
+        "Women>Clothing>Women\"s Clothing",
+        "Women>Clothing>Plus Size",
+        "Women>International Brands>Sports",
+        "Women>Florals>Clothing",
+        "Women>Form-fitting>Clothing",
+        "Women>Rock Chic>Clothing",
+        "Women>Girl Boss>Clothing"
+      ],
+      'map': [
+        ('product_name', 'NAME'),
+        ('currency', 'CURRENCY'),
+        ('product_url', 'BUYURL'),
+        ('image_url', 'IMAGEURL'),
+        ('unique_url', 'IMAGEURL')
+      ]
+    },
+    {
+      "website": "yoox",
+      "countries": [
+        {
+          "name": "malaysia",
+          "affiliate_name": "YOOX.com Malaysia"
+        },
+        {
+          "name": "singapore",
+          "affiliate_name": "YOOX.com Singapore"
+        }
+      ],
+      "cats": [
+        "Apparel & Accessories > Clothing > Outerwear > Coats & Jackets",
+        "Apparel & Accessories > Clothing > Shirts & Tops",
+        "Apparel & Accessories > Clothing > One-Pieces",
+        "Apparel & Accessories > Clothing > Skirts",
+        "Apparel & Accessories > Clothing > Shorts",
+        "Apparel & Accessories > Clothing > Pants",
+        "Apparel & Accessories > Clothing",
+        "Apparel & Accessories > Clothing > Uniforms",
+        "Apparel & Accessories > Clothing > Suits",
+        "Apparel & Accessories > Clothing > Outerwear",
+        "Apparel & Accessories > Clothing > Outerwear > Snow Pants & Suits",
+        "Apparel & Accessories > Clothing > One-Pieces > Jumpsuits & Rompers"
+      ],
+      'map':[
+        ('product_name', 'Name'),
+        ('currency', 'Currency'),
+        ('product_url', 'Url'),
+        ('image_url', 'Image'),
+        ('unique_url', 'Url')
+      ]
+    },
+    {
+      "website": "asos",
+      "countries": [
+        {
+          "name": "global",
+          "affiliate_name": "ASOS",
+          "feed_url": "ftp://iQNECT:n39PzPcw@aftp.linksynergy.com/37863_3301502_mp.txt.gz",
+          "prepend_header": "product_id|product_name|sku|primary_cat|secondary_cat|product_url|image_url|c8|c9|c10|c11|c12|sale_price|retail_price|c15|c16|c17|c18|c19|c20|c21|c22|c23|c24|c25|currency|c27|c28|c29|c30|c31|c32|c33|c34|c35|c36|c37|c38\n"
+        }
+      ],
+      "cats": [
+        'All-In-One', 'Knitwear', 'Mens', 'Tops', 'Trousers', 'Womens', 'Mens Jackets', 'Womens Jackets', 'Womens Coats', 'Mens Coats',
+        '|',
+        'Caps', 'Wallets', 'Gloves', 'Hats', 'Bags', 'Accessories', 'Hair', 'Shoes', 'Sandals', 'Trainers', 'Gifts',
+        'Sunglasses', 'Underwear', 'Swimming', 'Bikinis', 'Swimsuits', 'Swimwear', 'Socks', 'Accessories', 'Backpacks', 'Jewelry', 'Luggage',
+        'Lingerie/Underwear', 'Belts', 'Bracelets', 'Earrings', 'Necklaces', 'Jewellery', 'Lipsticks', 'Conditioners'
+      ],
+      'map':[
+        ('product_name', 'product_name'),
+        ('currency', 'currency'),
+        ('product_url', 'product_url'),
+        ('image_url', 'image_url'),
+        ('unique_url', 'image_url')
+      ]
+    },
+    {
+      "website": "farfetch",
+      "countries": [
+        {
+          "name": "global",
+          "affiliate_name": "FarFetch",
+          "feed_url": "ftp://iQNECT:n39PzPcw@aftp.linksynergy.com/35653_3301502_mp.txt.gz",
+          "prepend_header": "product_id|product_name|sku|primary_cat|secondary_cat|product_url|image_url|c8|c9|c10|c11|c12|sale_price|retail_price|c15|c16|c17|c18|c19|c20|c21|c22|c23|c24|c25|currency|c27|c28|c29|c30|c31|c32|c33|gender|c35|c36|c37|c38\n"
+        }
+      ],
+      "cats": [
+        'Clothing & Accessories',
+        '|',
+        'Accessories', 'Accessory', 'Anklets', 'Backpacks', 'Bags', 'Belts', 'Boots', 'Bikinis', 'Bracelets', 'Bras', 'Brogues', 'Ballerinas', 'Biometric', 'Bath', 'Conditioner', 'Candles', 'Bedding', 'Barware', 'Artwork', 'Ashtrays',
+        'Buckles', 'Braces', 'Bridal', 'Brooches', 'Card', 'Clips', 'Claw', 'Baby', 'Capes', 'Caps', 'Charms', 'Conditioners', 'Crib', 'Earrings', 'Espadrilles', 'Eye', 'Face', 'Facial',
+        'Flip Flops', 'Gifts', 'Gloves', 'Gloves', 'Holdalls', 'Hi-Tops', 'Hair', 'Hair', 'Handbags', 'Hats', 'Headbands', 'Headwear', 'Jewellery', 'Jewelry', 'Loafers', 'Lip', 'Lotion',
+        'Lingerie', 'Underwear', 'Lipsticks', 'Luggage', 'Key Chains','Kimono', 'Mittens', 'Necklaces', 'Mules', 'Pumps', 'Neckties', 'Night', 'Oxfords', 'Phone', 'Makeup',
+        'Purses', 'Pendants', 'Pins', 'Rings', 'Pre-Walker', 'Sandals', 'Slippers', 'Sandals', 'Scarves', 'Snoods', 'Shoes', 'Socks', 'Shoelaces', 'Sneakers', 'Skin', 'Shampoo', 'Vision', 'Shaving',
+        'Sunglasses', 'Swimming', 'Swimsuits', 'Swimwear', 'Toe', 'Toddler', 'Trainers', 'Underwear', 'Wallets', 'Warmers',
+        'Watches'
+      ],
+      'map':[
+        ('product_name', 'product_name'),
+        ('currency', 'currency'),
+        ('product_url', 'product_url'),
+        ('image_url', 'image_url'),
+        ('unique_url', 'image_url')
+      ]
+    }
+  ]
