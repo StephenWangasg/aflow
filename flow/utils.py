@@ -8,13 +8,16 @@ def get_hashed_st(st):
     hashed_st = m.hexdigest()
     return hashed_st
 
+def download_image_from_url(url, image_path):
+    img_data = urllib2.urlopen(url, timeout=30).read()
+    with open(image_path, 'wb') as f:
+        f.write(img_data)
+
 
 def download_image(url_path):
     url, path = url_path
     try:
-        img_data = urllib2.urlopen(url, timeout=30).read()
-        with open(path, 'wb') as f:
-            f.write(img_data)
+        download_image_from_url(url, path)
     except (KeyboardInterrupt, SystemExit):
         raise
     except Exception as e:
