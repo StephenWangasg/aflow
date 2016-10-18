@@ -42,7 +42,7 @@ def _mongo2aero(_set):
 def mongo2aero(**kwargs):
     ti = kwargs['ti']
     _set = ti.xcom_pull(key='set', task_ids='get_current_set')
-    _create_aero_master(_set)
+    _mongo2aero(_set)
 
 
 def _create_annoy_for_categories(_set):
