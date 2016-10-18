@@ -26,7 +26,7 @@ def empty_aero_set(**kwargs):
     _empty_aero_set(_set)
 
 
-def _create_aero_master(_set):
+def _mongo2aero(_set):
     product_map = {}
     for idx, product in enumerate(collection.find({'extracted': True})):
         bins = {k: product[k] for k in product if
@@ -39,7 +39,7 @@ def _create_aero_master(_set):
         pickle.dump(product_map, f)
 
 
-def create_aero_master(**kwargs):
+def mongo2aero(**kwargs):
     ti = kwargs['ti']
     _set = ti.xcom_pull(key='set', task_ids='get_current_set')
     _create_aero_master(_set)
@@ -124,7 +124,6 @@ def create_annoy_for_filters(**kwargs):
 def _get_current_set():
     st = '/set'
     s = Server(query_server['host'], query_server['port'])
-    print s.return_response(st)
     current_set_name = s.return_response(st)['set']
     assert current_set_name in ['one', 'two']
     return {'one':'two', 'two':'one'}[current_set_name]
