@@ -1,5 +1,5 @@
 import time, os
-from config import segmentation_server, classification_server, collection
+from flow.config import segmentation_server, classification_server, collection, feed_images_path
 from requests.exceptions import ConnectionError
 from flow.utils import ProductFeature, download_image_from_url
 
@@ -32,7 +32,14 @@ def redis_to_mongo():
         except Exception as e:
             print e
             raise
-       
+def change_paths():
+    for row in collection.find({},{'image_path':1, 'image_name':1}):
+        if 'new_models' in row['image_path']:
+            img_path = feed_images_path + row['image_name']
+            print img_path
+#            break
+            collection.update_one({'image_name': row['image_name']}, {'$set': {'image_path':img_path}})
 
 if __name__ == '__main__':
-    redis_to_mongo()
+#    redis_to_mongo()
+    change_paths()
