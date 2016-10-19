@@ -61,6 +61,5 @@ class ProductFeature:
     def get_feature(self, query_img_path):
         s1 = self.segmentor.get_detections(query_img_path)
         box = s1['detections'][0]['coord']
-        print box
         attributes = self.classifier.get_attributes(query_img_path, box)
         return attributes
