@@ -10,7 +10,7 @@ from flow.config import query_server
 
 
 def get_current_rates():
-    sources = ['USD', 'AUD', 'GBP']
+    sources = ['USD', 'AUD', 'GBP', 'SGD', 'MYR', 'IDR']
     conversions = {}
     for source in sources:
         payload = {
