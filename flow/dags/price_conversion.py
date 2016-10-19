@@ -42,7 +42,7 @@ default_args = {
     'retry_delay': timedelta(minutes=30),
 }
 
-dag = DAG('update_db', default_args=default_args)
+dag = DAG('price_conversion', default_args=default_args)
 
 t1 = PythonOperator(
     task_id='update_currency_conversion',
