@@ -16,9 +16,13 @@ def redis_to_mongo():
                 except (KeyboardInterrupt, SystemExit):
                     raise
                 except ValueError:
+                    print "value error"
                     collection.update_one({'image_path': img_path}, {'$set': {'extracted':'download_error_url'}})
+                    continue
                 except urllib2.HTTPError:
+                    print "404 erroe "
                     collection.update_one({'image_path': img_path}, {'$set': {'extracted':'download_error_url_404'}})
+                    continue
                 except Exception as e:
                     print e
                     raise
@@ -27,12 +31,13 @@ def redis_to_mongo():
             collection.update_one({'image_path': img_path}, {'$set': features})
         except (KeyboardInterrupt, SystemExit):
             raise
-        except ConnectionError as e:
-            print e
-            time.sleep(600)
+#        except ConnectionError as e:
+#            print e
+#            time.sleep(600)
         except SyntaxError, e:
+            print os.path.getsize(img_path) > 0
             collection.update_one({'image_path': img_path}, {'$set': {'extracted':'server_error'}})
-            
+            print "server error"
         except Exception as e:
             print e
             raise
