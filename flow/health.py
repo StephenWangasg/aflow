@@ -50,14 +50,16 @@ def check_uniqueness():
     unique_urls = set()
     for row in collection.find({}, {'unique_url': 1}):
         unique_urls.add(row['unique_url'])
+    print len(unique_urls)
+    print "mongo count ", collection.find().count()
     delete_nos = 0
-    for unique_url in list[unique_urls]:
-        for idx, row in collection.find({'unique_url':unique_url},{'image_path':1}):
+    for unique_url in list(unique_urls):
+        for idx, row in enumerate(collection.find({'unique_url':unique_url},{'image_path':1})):
             if idx==0:
                 continue
-            #collection.remove({'image_path':row['image_path']})
-        delete_nos += idx
-        print delete_nos
+            collection.remove({'image_path':row['image_path']})
+            delete_nos += 1
+    print delete_nos
 
 
 if __name__ == '__main__':
