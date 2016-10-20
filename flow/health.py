@@ -1,9 +1,5 @@
-import csv, sys, shutil, uuid, eventlet, os
-from downloaders import download_and_parse
-from config import feed_list, data_feed_path, feed_images_path
-from tools import download_image, get_hashed_st, scheduler
-from config import collection, imgQ
-csv.field_size_limit(sys.maxsize)
+from flow.config import collection, feed_images_path, data_feed_path
+import os, eventlet, csv
 from collections import Counter
 
 
