@@ -7,7 +7,6 @@ from flow.utils import ProductFeature, download_image, get_hashed_st
 def delete_old_urls(**kwargs):
     ti = kwargs['ti']
     delete_urls = ti.xcom_pull(key='delete_urls', task_ids='get_diff_urls')
-    print "delete urls : ", delete_urls
     for delete_url in list(delete_urls):
         collection.remove({'unique_url': delete_url})
 
