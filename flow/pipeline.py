@@ -46,18 +46,22 @@ def copy_current2previous(**kwargs):
     shutil.copyfile(current_parsed_path, previous_parsed_path)
 
 
+def get_unique_urls(website, country):
+    previous_unique_urls = set()
+    for row in collection.find({'site':website, 'location':country},{'unique_url':1}):
+        previous_unique_urls.add(row['unique_url'])
+    return previous_unique_urls
+
+
 def get_diff_urls(**kwargs):
     current_parsed_path = kwargs['current_parsed_csv']
-    previous_parsed_path = kwargs['previous_parsed_csv']
+    website = kwargs['website']
+    country = kwargs['country']
+    previous_unique_urls = get_unique_urls(website, country)
     current_csv = csv.DictReader(open(current_parsed_path, 'rb'), delimiter='\t')
-    current_product_urls = [_['unique_url'] for _ in current_csv]
-    try:
-        previous_csv = csv.DictReader(open(previous_parsed_path, 'rb'), delimiter='\t')
-        previous_product_urls = [_['unique_url'] for _ in previous_csv]
-    except IOError:
-        previous_product_urls = []
-    delete_urls = set(previous_product_urls) - set(current_product_urls)
-    new_urls = set(current_product_urls) - set(previous_product_urls)
+    current_unique_urls = set([_['unique_url'] for _ in current_csv])
+    delete_urls = previous_unique_urls - set(current_unique_urls)
+    new_urls = set(current_unique_urls) - previous_unique_urls
     kwargs['ti'].xcom_push(key='delete_urls', value=delete_urls)
     kwargs['ti'].xcom_push(key='new_urls', value=new_urls)
 
