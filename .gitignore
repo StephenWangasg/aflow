@@ -3,3 +3,4 @@
 config.py
 .idea/
 webapp/webapp_uwsgi.ini
+flow/dags/paths.py

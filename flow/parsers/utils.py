@@ -105,7 +105,7 @@ def farfetch(row, map_, cats):
 
 def parse_write(**kwargs):
     inputfile = kwargs['download_file']
-    outputfile = kwargs['current_parsed_csv']
+    outputfile = kwargs['new_parsed_csv']
     map = kwargs['map']
     cats = kwargs['cats']
     website = kwargs['website']

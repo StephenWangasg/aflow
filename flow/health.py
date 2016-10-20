@@ -50,25 +50,24 @@ def download_other_images():
         pass
 
 
-
-def delete_redis():
-    while True:
-        product_id = imgQ.spop("insertQ")
-        print product_id
-        if product_id is None:
-            break
-
-
-def insert_redis():
-    for row in collection.find({'extracted': False}, {'image_name': 1}):
-        image_path = feed_images_path + row['image_name']
-        if os.path.isfile(row['image_path']):
-            imgQ.sadd("insertQ", row["image_path"])
+def check_uniqueness():
+    unique_urls = set()
+    for row in collection.find({}, {'unique_url': 1}):
+        unique_urls.add(row['unique_url'])
+    delete_nos = 0
+    for unique_url in list[unique_urls]:
+        for idx, row in collection.find({'unique_url':unique_url},{'image_path':1}):
+            if idx==0:
+                continue
+            #collection.remove({'image_path':row['image_path']})
+        delete_nos += idx
+        print delete_nos
 
 
 if __name__ == '__main__':
 
     # print "Is db in sync with latest feeds ? ", is_db_sync_with_latest_feed()
     #count_images_downloaded()
-    download_other_images()
-    count_images_downloaded()
+    #download_other_images()
+    #count_images_downloaded()
+    check_uniqueness()

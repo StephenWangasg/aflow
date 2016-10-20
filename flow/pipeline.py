@@ -20,7 +20,7 @@ def download_images(**kwargs):
 
 
 def insert_new_urls(**kwargs):
-    current_parsed_path = kwargs['current_parsed_csv']
+    current_parsed_path = kwargs['new_parsed_csv']
     website = kwargs['website']
     country = kwargs['country']
     ti = kwargs['ti']
@@ -40,28 +40,27 @@ def insert_new_urls(**kwargs):
     kwargs['ti'].xcom_push(key='image_paths', value=image_paths)
 
 
-def copy_current2previous(**kwargs):
-    current_parsed_path = kwargs['current_parsed_csv']
-    previous_parsed_path = kwargs['previous_parsed_csv']
-    shutil.copyfile(current_parsed_path, previous_parsed_path)
-
-
-def get_unique_urls(website, country):
+def get_unique_urls_from_db(**kwargs):
+    website = kwargs['website']
+    country = kwargs['country']
     previous_unique_urls = set()
     for row in collection.find({'site':website, 'location':country},{'unique_url':1}):
         previous_unique_urls.add(row['unique_url'])
-    return previous_unique_urls
+    kwargs['ti'].xcom_push(key='previous_unique_urls', value=previous_unique_urls)
 
+
+def get_unique_urls_from_csv(**kwargs):
+    new_parsed_path = kwargs['new_parsed_csv']
+    new_csv = csv.DictReader(open(new_parsed_path, 'rb'), delimiter='\t')
+    new_unique_urls = set([_['unique_url'] for _ in new_csv])
+    kwargs['ti'].xcom_push(key='new_unique_urls', value=new_unique_urls)
 
 def get_diff_urls(**kwargs):
-    current_parsed_path = kwargs['current_parsed_csv']
-    website = kwargs['website']
-    country = kwargs['country']
-    previous_unique_urls = get_unique_urls(website, country)
-    current_csv = csv.DictReader(open(current_parsed_path, 'rb'), delimiter='\t')
-    current_unique_urls = set([_['unique_url'] for _ in current_csv])
-    delete_urls = previous_unique_urls - set(current_unique_urls)
-    new_urls = set(current_unique_urls) - previous_unique_urls
+    ti = kwargs['ti']
+    new_unique_urls = ti.xcom_pull(key='new_unique_urls', task_ids='get_unique_urls_from_csv')
+    previous_unique_urls = ti.xcom_pull(key='previous_unique_urls', task_ids='get_unique_urls_from_db')
+    delete_urls = previous_unique_urls - new_unique_urls
+    new_urls = new_unique_urls - previous_unique_urls
     kwargs['ti'].xcom_push(key='delete_urls', value=delete_urls)
     kwargs['ti'].xcom_push(key='new_urls', value=new_urls)
 
