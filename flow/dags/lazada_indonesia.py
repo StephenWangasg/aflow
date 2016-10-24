@@ -17,8 +17,7 @@ p = data_feed_path + website + country
 
 op_kwargs = {
     'download_file': p + '.txt',
-    'current_parsed_csv': p + 'current.csv',
-    'previous_parsed_csv': p + 'previous.csv',
+    'new_parsed_csv': p + 'current.csv',
     'website': website,
     'country': country,
     "feed_url": "http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=id&cat1=%22Fashion%22&cat2=%22Men%22%2C%22Women%22&cat3=%22Clothing%22&price=0&app=0",

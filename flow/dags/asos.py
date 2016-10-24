@@ -17,8 +17,7 @@ p = data_feed_path + website + country
 
 op_kwargs = {
     'download_file': p + '.txt',
-    'current_parsed_csv': p + 'current.csv',
-    'previous_parsed_csv': p + 'previous.csv',
+    'new_parsed_csv': p + 'current.csv',
     'website': website,
     'country': country,
     "affiliate_name": "ASOS",
