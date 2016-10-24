@@ -8,8 +8,11 @@ from data import namespace, client, categories, layer_dimension, layer, attribut
 
 def restart_server(**kwargs):
     ti = kwargs['ti']
-    _set = ti.xcom_pull(key='set', task_ids='get_current_set')
-    pass
+    _set = ti.xcom_pull(key='set', task_ids='get_alternate_set')
+    with open(model_path+"nsfile.txt", "w") as text_file:
+        text_file.write(_set)
+    subprocess.call("ssh -i /home/ubuntu/iq-vision-dev.pem ubuntu@172.31.2.224 'sudo /tmp/r.sh'")
+    assert _get_current_set()==_set
 
 
 def _empty_aero_set(_set):
@@ -22,7 +25,7 @@ def _empty_aero_set(_set):
 
 def empty_aero_set(**kwargs):
     ti = kwargs['ti']
-    _set = ti.xcom_pull(key='set', task_ids='get_current_set')
+    _set = ti.xcom_pull(key='set', task_ids='get_alternate_set')
     _empty_aero_set(_set)
 
 
@@ -41,7 +44,7 @@ def _mongo2aero(_set):
 
 def mongo2aero(**kwargs):
     ti = kwargs['ti']
-    _set = ti.xcom_pull(key='set', task_ids='get_current_set')
+    _set = ti.xcom_pull(key='set', task_ids='get_alternate_set')
     _mongo2aero(_set)
 
 
@@ -70,7 +73,7 @@ def _create_annoy_for_categories(_set):
 
 def create_annoy_for_categories(**kwargs):
     ti = kwargs['ti']
-    _set = ti.xcom_pull(key='set', task_ids='get_current_set')
+    _set = ti.xcom_pull(key='set', task_ids='get_alternate_set')
     _create_annoy_for_categories(_set)
 
 
@@ -118,7 +121,7 @@ def _create_annoy_for_filters(_set):
 
 def create_annoy_for_filters(**kwargs):
     ti = kwargs['ti']
-    _set = ti.xcom_pull(key='set', task_ids='get_current_set')
+    _set = ti.xcom_pull(key='set', task_ids='get_alternate_set')
     _create_annoy_for_filters(_set)
 
 def _get_current_set():
@@ -126,11 +129,15 @@ def _get_current_set():
     s = Server(query_server['host'], query_server['port'])
     current_set_name = s.return_response(st)['set']
     assert current_set_name in ['one', 'two']
-    return {'one':'two', 'two':'one'}[current_set_name]
+    return current_set_name
 
-def get_current_set(**kwargs):
-    set_name = _get_current_set()
-    kwargs['ti'].xcom_push(key='set', value=set_name)
+def _get_alternate_set():
+    current_set_name = _get_current_set()
+    return {'one': 'two', 'two': 'one'}[current_set_name]
+
+def get_alternate_set(**kwargs):
+    alternate_set_name = _get_alternate_set()
+    kwargs['ti'].xcom_push(key='set', value=alternate_set_name)
 
 
 if __name__ == "__main__":

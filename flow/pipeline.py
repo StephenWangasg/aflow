@@ -1,8 +1,9 @@
-import csv, eventlet, uuid, hashlib, urllib2, shutil
-from flow.config import collection, feed_images_path
+import csv, eventlet, uuid, hashlib, urllib2, shutil, datetime
+from flow.config import collection, feed_images_path, _db
 from config import segmentation_server, classification_server
 from flow.utils import ProductFeature, download_image, get_hashed_st
 
+ingestion_collection = _db['ingestion']
 
 def delete_old_urls(**kwargs):
     ti = kwargs['ti']
@@ -55,27 +56,28 @@ def get_unique_urls_from_csv(**kwargs):
     new_unique_urls = set([_['unique_url'] for _ in new_csv])
     kwargs['ti'].xcom_push(key='new_unique_urls', value=new_unique_urls)
 
+
 def get_diff_urls(**kwargs):
     ti = kwargs['ti']
     new_unique_urls = ti.xcom_pull(key='new_unique_urls', task_ids='get_unique_urls_from_csv')
     previous_unique_urls = ti.xcom_pull(key='previous_unique_urls', task_ids='get_unique_urls_from_db')
     delete_urls = previous_unique_urls - new_unique_urls
     new_urls = new_unique_urls - previous_unique_urls
+    ingestion_collection.update_one(
+        {
+            'site': kwargs['website'],
+            'location':kwargs['country']
+        },
+        {
+            '$push':{
+                'counts':{
+                    'date': datetime.datetime.utcnow(),
+                    'newCount':len(new_urls),
+                    'deleteCount': len(delete_urls),
+                    'overlapCount': len(new_unique_urls & previous_unique_urls)
+                }
+            }
+        },
+        upsert=True)
     kwargs['ti'].xcom_push(key='delete_urls', value=delete_urls)
     kwargs['ti'].xcom_push(key='new_urls', value=new_urls)
-
-
-def feature_extraction(**kwargs):
-    ti = kwargs['ti']
-    image_paths = ti.xcom_pull(key='image_paths', task_ids='insert_new_urls')
-    Features = ProductFeature(segmentation_server, classification_server)
-    for (_, img_path) in image_paths:
-        try:
-            features = Features.get_feature(img_path)
-            features['extracted'] = True
-            collection.update_one({'image_path': img_path}, {'$set': features})
-        except (KeyboardInterrupt, SystemExit):
-            raise
-        except Exception as e:
-            print e
-            raise

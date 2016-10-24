@@ -19,5 +19,5 @@ import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'currency_conversion$', views.get_currency_conversion),
+    url(r'db_status$', views.get_db_status),
 ]

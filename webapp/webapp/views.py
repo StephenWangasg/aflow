@@ -1,9 +1,11 @@
-import requests
-from django.http import JsonResponse
-import redis, ast
-from datetime import datetime
-currency_cache = redis.StrictRedis(host='localhost', port=6379, db=0)
+from pymongo import MongoClient
 from django import db
+from django.http import HttpResponse
+
+mongo_client_ = MongoClient()
+_db = mongo_client_['fashion']
+collection = _db['products']
+
 
 def send_response(response):
     response["Access-Control-Allow-Origin"] = '*'
@@ -12,40 +14,39 @@ def send_response(response):
     return response
 
 
-def get_current_rates():
-    sources = ['USD', 'AUD', 'GBP']
-    conversions = {}
-    for source in sources:
-        payload = {
-            'access_key': '68ed2e50d616f09954f0906bfe509904',
-            'source': source,
-            'currencies': 'USD,SGD,MYR,IDR'
-        }
-        r = requests.get('http://apilayer.net/api/live', params=payload)
-        conversions.update(r.json()['quotes'])
-    return conversions
+def get_db_status(request):
+    h = "<html><body>"
+    h += '<table border="1"><tr>'
+    h += '<th>Site </th>'
+    h += '<th>Location </th>'
+    h += '<th>Count </th>'
+    h += '<th>Feature extracted </th>'
+    h += '<th>To be extracted </th>'
+    h += '<th>Not proper image URL </th>'
+    h += '<th>404 on image URL </th>'
+    h += '<th>Timeout for download </th>'
+    h += '<th>Server error </th></tr>'
 
+    for site in ['lazada', 'asos', 'farfetch', 'yoox', 'zalora']:
+        for location in ['singapore', 'global', 'indonesia', 'malaysia']:
+            h += "<tr><th>%s </th>" % site
+            h += "<th> %s </th>" % location
+            h += "<th> %s </th>" % collection.find({'site':site, 'location':location}).count()
+            h += "<th> %s </th>" % collection.find({'site':site, 'location':location, "extracted":True}).count()
+            h += "<th> %s </th>" % collection.find({'site':site, 'location':location, "extracted":False}).count()
+            h += "<th> %s </th>" % collection.find({'site':site, 'location':location, 'extracted': 'download_error_url'}).count()
+            h += "<th> %s </th>" % collection.find({'site':site, 'location':location, 'extracted': 'download_error_url_404'}).count()
+            h += "<th> %s </th>" % collection.find({'site':site, 'location':location, 'extracted': 'download_error_url_timeout'}).count()
+            h += "<th> %s </th></tr>" % collection.find({'site':site, 'location':location, 'extracted': 'server_error'}).count()
+    h += "<tr><th>%s </th>" % "total"
+    h += "<th> %s </th>" % "count"
+    h += "<th> %s </th>" % collection.find().count()
+    h += "<th> %s </th>" % collection.find({"extracted": True}).count()
+    h += "<th> %s </th>" % collection.find({"extracted": False}).count()
+    h += "<th> %s </th>" % collection.find( {'extracted': 'download_error_url'}).count()
+    h += "<th> %s </th>" % collection.find({'extracted': 'download_error_url_404'}).count()
+    h += "<th> %s </th>" % collection.find({'extracted': 'download_error_url_timeout'}).count()
+    h += "<th> %s </th></tr>" % collection.find({'extracted': 'server_error'}).count()
 
-def cache_currency_with_time():
-    conversions = get_current_rates()
-    t = str(datetime.now())
-    currency_cache.set('currencies', str(conversions))
-    currency_cache.set('currency_time', t)
-    return conversions
-
-
-def get_currency_conversion(request):
-    cached_time = currency_cache.get('currency_time')
-
-    if (cached_time == 'None') or cached_time == None:
-        conversions = cache_currency_with_time()
-    else:
-        cached_time = currency_cache.get('currency_time')
-        cached_time = datetime.strptime(cached_time, '%Y-%m-%d %H:%M:%S.%f')
-        elapsed_time = datetime.now() - cached_time
-        if divmod(elapsed_time.total_seconds(), 60*24)[0]>24.0:
-            conversions = cache_currency_with_time()
-        else:
-            exist = currency_cache.get('currencies')
-            conversions = ast.literal_eval(exist)
-    return send_response(JsonResponse({'conversions': conversions}))
+    h += "</table></body></html>"
+    return send_response(HttpResponse(h))

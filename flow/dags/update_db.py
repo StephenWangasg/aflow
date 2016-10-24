@@ -3,28 +3,16 @@ from paths import flow_folder
 sys.path.insert(0, flow_folder)
 
 from airflow import DAG
-from datetime import datetime, timedelta
 from airflow.operators.python_operator import PythonOperator
-from flow.db_transfer import get_current_set, empty_aero_set, create_annoy_for_categories, create_annoy_for_filters, restart_server, mongo2aero
-
-
-default_args = {
-    'owner': 'raja',
-    'depends_on_past': False,
-    'start_date': datetime(2016,10,1),
-    'email':['raja@iqnect.org'],
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'retries': 0,
-    'retry_delay': timedelta(minutes=30),
-}
+from flow.db_transfer import get_alternate_set, empty_aero_set, create_annoy_for_categories, create_annoy_for_filters, restart_server, mongo2aero
+from flow.dags.utils import default_args
 
 dag = DAG('update_db', default_args=default_args)
 
 t1 = PythonOperator(
-    task_id='get_current_set',
+    task_id='get_alternate_set',
     provide_context=True,
-    python_callable=get_current_set,
+    python_callable=get_alternate_set,
     dag=dag)
 
 t2 = PythonOperator(
@@ -57,8 +45,4 @@ t6 = PythonOperator(
     python_callable=restart_server,
     dag=dag)
 
-t2.set_upstream(t1)
-t3.set_upstream(t2)
-t4.set_upstream(t3)
-t5.set_upstream(t4)
-t6.set_upstream(t5)
+t1 >> t2 >> t3 >> t4 >> t5 >> t6

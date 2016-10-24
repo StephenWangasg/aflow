@@ -3,11 +3,10 @@ from paths import flow_folder
 sys.path.insert(0, flow_folder)
 
 from airflow import DAG
-from datetime import datetime, timedelta
 from airflow.operators.python_operator import PythonOperator
 import requests, redis
 from flow.config import query_server
-
+from flow.dags.utils import default_args
 
 def get_current_rates():
     sources = ['USD', 'AUD', 'GBP', 'SGD', 'MYR', 'IDR']
@@ -28,19 +27,6 @@ def cache_currency(**kwargs):
     conversions = get_current_rates()
     currency_cache.set('currencies', str(conversions))
     print conversions
-
-
-
-default_args = {
-    'owner': 'raja',
-    'depends_on_past': False,
-    'start_date': datetime(2016,10,1),
-    'email':['raja@iqnect.org'],
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'retries': 1,
-    'retry_delay': timedelta(minutes=30),
-}
 
 dag = DAG('price_conversion', default_args=default_args)
 

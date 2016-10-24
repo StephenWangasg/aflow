@@ -45,7 +45,7 @@ t2 = PythonOperator(
     op_kwargs=op_kwargs,
     dag=dag)
 
-t3, t4, t5, t6, t7, t8, t9 = get_sub_dag(op_kwargs, dag)
-t1 >> t2 >> t4 >> t5 >> t7 >> t8 >> t9
+t3, t4, t5, t6, t7, t8 = get_sub_dag(op_kwargs, dag)
+t1 >> t2 >> t4 >> t5 >> t7 >> t8
 t3 >> t5
 t5 >> t6

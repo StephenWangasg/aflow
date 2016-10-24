@@ -29,7 +29,8 @@ op_kwargs = {
         'All-In-One', 'Knitwear', 'Mens', 'Tops', 'Trousers', 'Womens', 'Mens Jackets', 'Womens Jackets', 'Womens Coats', 'Mens Coats', '|',
         'Caps', 'Wallets', 'Gloves', 'Hats', 'Bags', 'Accessories', 'Hair', 'Shoes', 'Sandals', 'Trainers', 'Gifts',
         'Sunglasses', 'Underwear', 'Swimming', 'Bikinis', 'Swimsuits', 'Swimwear', 'Socks', 'Accessories', 'Backpacks', 'Jewelry', 'Luggage',
-        'Lingerie/Underwear', 'Belts', 'Bracelets', 'Earrings', 'Necklaces', 'Jewellery', 'Lipsticks', 'Conditioners'
+        'Lingerie/Underwear', 'Belts', 'Bracelets', 'Earrings', 'Necklaces', 'Jewellery', 'Lipsticks', 'Conditioners', 'Mens Clothing Other',
+        'Mens Bracelets', 'Other Gifts'
         ],
     'map': [
         ('product_name', 'product_name'),
@@ -54,7 +55,7 @@ t2 = PythonOperator(
     op_kwargs=op_kwargs,
     dag=dag)
 
-t3, t4, t5, t6, t7, t8, t9 = get_sub_dag(op_kwargs, dag)
-t1 >> t2 >> t4 >> t5 >> t7 >> t8 >> t9
+t3, t4, t5, t6, t7, t8 = get_sub_dag(op_kwargs, dag)
+t1 >> t2 >> t4 >> t5 >> t7 >> t8
 t3 >> t5
 t5 >> t6

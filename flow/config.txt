@@ -14,5 +14,5 @@ aerospike_config = {'hosts': [ ('172.31.25.128', 3000) ],'policies': {'timeout':
 
 # Connections
 mongo_client_ = MongoClient(mongo_config['host'], mongo_config['port'])
-db = mongo_client_['fashion']
-collection = db['products']
+_db = mongo_client_['fashion']
+collection = _db['products']
