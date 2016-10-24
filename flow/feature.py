@@ -2,14 +2,20 @@ import time, os
 from flow.config import segmentation_server, classification_server, collection, feed_images_path
 from requests.exceptions import ConnectionError
 from flow.utils import ProductFeature, download_image_from_url
-import urllib2
+import urllib2, socket
 
 def redis_to_mongo():
+    seg = raw_input("segmentation server : ")
+    clas = raw_input("classification server : ")
+    segmentation_server = {'host': seg, 'port': '8000'}
+    classification_server = {'host': clas, 'port': '8000'}
     Features = ProductFeature(segmentation_server, classification_server)
     while True:
         try:
-            product = collection.find_one({'extracted': False}, {'image_path': 1, 'image_url': 1})
+            product = collection.find_and_modify(query={'extracted':False}, update={"$set": {'extracted': "processing"}}, upsert=False, full_response= True)['value']
+#            product = collection.find_one({'extracted': False}, {'image_path': 1, 'image_url': 1})
             img_path = product['image_path']
+            print img_path
             if not os.path.isfile(img_path):
                 try:
                     download_image_from_url(product['image_url'], img_path)
@@ -22,6 +28,10 @@ def redis_to_mongo():
                 except urllib2.HTTPError:
                     print "404 erroe "
                     collection.update_one({'image_path': img_path}, {'$set': {'extracted':'download_error_url_404'}})
+                    continue
+                except socket.timeout:
+                    print "timeout error"
+                    collection.update_one({'image_path': img_path}, {'$set': {'extracted':'download_error_url_timeout'}})
                     continue
                 except Exception as e:
                     print e
@@ -51,4 +61,4 @@ def change_paths():
 
 if __name__ == '__main__':
     redis_to_mongo()
-    change_paths()
+    #change_paths()
