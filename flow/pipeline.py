@@ -16,7 +16,7 @@ def download_images(**kwargs):
     ti = kwargs['ti']
     image_paths = ti.xcom_pull(key='image_paths', task_ids='insert_new_urls')
     pool = eventlet.GreenPool()
-    for _ in pool.imap(download_image, image_paths):
+    for _ in pool.imap(download_image, image_paths[:1000]):
         pass
 
 
