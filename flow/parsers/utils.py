@@ -24,10 +24,12 @@ def get_prices(price, price2):
         p1 = float(price)
     except ValueError:
         p1 = 0.0
+        raise
     try:
         p2 = float(price2)
     except ValueError:
         p2 = 0.0
+        raise
     disp_price = p2 if p1 > p2 else p1
     return {'price': str(p1), 'disc_price': str(p2), 'display_price': str(disp_price)}
 
