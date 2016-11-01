@@ -1,1 +1,1 @@
-flow_folder = '/home/raja/dev/fashion-ingestion'
+flow_folder = '/home/ubuntu/dev/fashion-ingestion'

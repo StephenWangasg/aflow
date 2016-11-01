@@ -2,6 +2,7 @@ import csv, eventlet, uuid, hashlib, urllib2, shutil, datetime
 from flow.config import collection, feed_images_path, _db
 from config import segmentation_server, classification_server
 from flow.utils import ProductFeature, download_image, get_hashed_st
+import pymongo 
 
 ingestion_collection = _db['ingestion']
 
@@ -36,7 +37,10 @@ def insert_new_urls(**kwargs):
                 row['image_name'] = str(uuid.uuid1()) + '.jpg'
                 row['image_path'] = feed_images_path + row['image_name']
                 row['hashedId'] = get_hashed_st(row['image_url'])
-                collection.insert(row)
+                try:
+                    collection.insert(row)
+                except pymongo.errors.DuplicateKeyError:
+                    continue 
                 image_paths.append((row['image_url'], row['image_path']))
     kwargs['ti'].xcom_push(key='image_paths', value=image_paths)
 
