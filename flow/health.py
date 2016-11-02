@@ -63,11 +63,8 @@ def check_uniqueness():
 
 
 def yoox_price_correction():
-    for doc in collection.find({'site':'yoox'},{'img_path':1, 'price':1}):
-        print doc
-        collection.update({'img_path':doc['image_path']},{'$set':{'display_price':doc['price']}})
-        print collection.find_one({'site':'yoox'})
-        break
+    for doc in collection.find({'site':'yoox'},{'image_path':1, 'price':1}):
+        collection.update({'image_path':doc['image_path']},{'$set':{'display_price':doc['price']}})
 
 
 if __name__ == '__main__':
@@ -76,4 +73,5 @@ if __name__ == '__main__':
     #count_images_downloaded()
     #download_other_images()
     #count_images_downloaded()
-    check_uniqueness()
+    #check_uniqueness()
+    yoox_price_correction()

@@ -8,7 +8,7 @@ from data import namespace, client, categories, layer_dimension, layer, attribut
 def _restart_server(_set):
     with open(model_path+"nsfile.txt", "w") as text_file:
         text_file.write(_set)
-    subprocess.call("ssh -i /home/ubuntu/iq-vision-dev.pem ubuntu@172.31.2.224 'sudo /home/ubuntu/dev/fashion-query-service/webapp/reload.sh'")
+    subprocess.call("ssh -i /home/ubuntu/iq-vision-dev.pem ubuntu@172.31.2.224 'sudo /home/ubuntu/dev/fashion-query-service/webapp/reload.sh'", shell=True)
     assert _get_current_set()==_set
 
 
