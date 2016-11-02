@@ -20,6 +20,17 @@ def download_images(**kwargs):
     for _ in pool.imap(download_image, image_paths[:1000]):
         pass
 
+def update_existing_urls(**kwargs):
+    current_parsed_path = kwargs['new_parsed_csv']
+    ti = kwargs['ti']
+    same_urls = ti.xcom_pull(key='same_urls', task_ids='get_diff_urls')
+    if len(same_urls) > 0:
+        for row in csv.DictReader(open(current_parsed_path, 'rb'), delimiter='\t'):
+            url = row["unique_url"]
+            if url in same_urls:
+                row['hashedId'] = get_hashed_st(row['image_url'])
+                collection.update_one({'unique_url': url}, {"$set":row})
+
 
 def insert_new_urls(**kwargs):
     current_parsed_path = kwargs['new_parsed_csv']
@@ -67,6 +78,7 @@ def get_diff_urls(**kwargs):
     previous_unique_urls = ti.xcom_pull(key='previous_unique_urls', task_ids='get_unique_urls_from_db')
     delete_urls = previous_unique_urls - new_unique_urls
     new_urls = new_unique_urls - previous_unique_urls
+    same_urls = new_unique_urls & previous_unique_urls
     ingestion_collection.update_one(
         {
             'site': kwargs['website'],
@@ -85,3 +97,4 @@ def get_diff_urls(**kwargs):
         upsert=True)
     kwargs['ti'].xcom_push(key='delete_urls', value=delete_urls)
     kwargs['ti'].xcom_push(key='new_urls', value=new_urls)
+    kwargs['ti'].xcom_push(key='same_urls', value=same_urls)

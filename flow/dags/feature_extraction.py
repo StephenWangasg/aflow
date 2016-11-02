@@ -7,7 +7,7 @@ from airflow.operators.python_operator import PythonOperator
 from flow.dags.utils import default_args
 from flow.config import classification_server, segmentation_server
 from flow.feature import feature_extraction
-
+'''
 dag = DAG('feature_extraction', default_args=default_args)
 
 
@@ -29,5 +29,5 @@ t2 = PythonOperator(
     python_callable=feature_extraction,
     op_kwargs=op_kwargs,
     dag=dag)
-
+'''
 
