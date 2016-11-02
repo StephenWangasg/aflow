@@ -68,7 +68,7 @@ def yoox_price_correction():
         collection.update({'img_path':doc['image_path']},{'$set':{'display_price':doc['price']}})
         print collection.find_one({'site':'yoox'})
         break
-        
+
 
 if __name__ == '__main__':
 

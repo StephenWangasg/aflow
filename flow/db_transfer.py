@@ -5,14 +5,17 @@ import subprocess, time
 from annoy import AnnoyIndex
 from data import namespace, client, categories, layer_dimension, layer, attribute_tree, inv_attribute_map, attribute_lengths, locations
 
-
-def restart_server(**kwargs):
-    ti = kwargs['ti']
-    _set = ti.xcom_pull(key='set', task_ids='get_alternate_set')
+def _restart_server(_set):
     with open(model_path+"nsfile.txt", "w") as text_file:
         text_file.write(_set)
     subprocess.call("ssh -i /home/ubuntu/iq-vision-dev.pem ubuntu@172.31.2.224 'sudo /home/ubuntu/dev/fashion-query-service/webapp/reload.sh'")
     assert _get_current_set()==_set
+
+
+def restart_server(**kwargs):
+    ti = kwargs['ti']
+    _set = ti.xcom_pull(key='set', task_ids='get_alternate_set')
+    _restart_server(_set)
 
 
 def _empty_aero_set(_set):
@@ -141,5 +144,5 @@ def get_alternate_set(**kwargs):
 
 
 if __name__ == "__main__":
-    print _get_current_set()
+    print _restart_server('two')
 
