@@ -62,6 +62,14 @@ def check_uniqueness():
     print delete_nos
 
 
+def yoox_price_correction():
+    for doc in collection.find({'site':'yoox'},{'img_path':1, 'price':1}):
+        print doc
+        collection.update({'img_path':doc['image_path']},{'$set':{'display_price':doc['price']}})
+        print collection.find_one({'site':'yoox'})
+        break
+        
+
 if __name__ == '__main__':
 
     # print "Is db in sync with latest feeds ? ", is_db_sync_with_latest_feed()

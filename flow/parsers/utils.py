@@ -28,7 +28,7 @@ def get_prices(price, price2):
         p2 = float(price2)
     except ValueError:
         p2 = 0.0
-    disp_price = p2 if p1 > p2 else p1
+    disp_price = p2 if (p1 > p2 and p2!=0.0) else p1
     return {'price': str(p1), 'disc_price': str(p2), 'display_price': str(disp_price)}
 
 
@@ -118,7 +118,6 @@ def parse_write(**kwargs):
             if type(parsed_row) == dict:
                 filtered_row = [parsed_row[your_key] for your_key in keys]
                 writer.writerow(filtered_row)
-                print filtered_row[2]
 
 
 if __name__ == "__main__":
