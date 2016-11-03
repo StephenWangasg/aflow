@@ -72,5 +72,6 @@ def change_paths():
             collection.update_one({'image_name': row['image_name']}, {'$set': {'image_path':img_path}})
 
 if __name__ == '__main__':
-    extract_feature()
+    #extract_feature()
+    _feature_extraction(segmentation_server, classification_server)
     #change_paths()
