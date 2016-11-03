@@ -41,6 +41,7 @@ def _mongo2aero(_set):
         key = (namespace, _set, str(idx))
         client.put(key, bins)
         product_map[bins['hashedId']] = bins['id']
+    print "no in aero now : ", idx+1
     with open(model_path + 'annoy_index_files/' + _set + '/' + 'hashedIdmap.p', 'wb') as f:
         pickle.dump(product_map, f)
 
@@ -144,5 +145,23 @@ def get_alternate_set(**kwargs):
 
 
 if __name__ == "__main__":
-    print _restart_server('two')
+    print "alternate set : ", _get_alternate_set()
+    _set = 'two'
+    print "emyting aero"
+    st = time.time()
+    _empty_aero_set(_set)
+    print time.time()-st
+    print "mongo2aero"
+    st = time.time()
+    _mongo2aero(_set)
+    print time.time() - st
+    print "annoy"
+    st = time.time()
+    _create_annoy_for_categories(_set)
+    print time.time() - st
+    print "filter annoy"
+    st = time.time()
+    _create_annoy_for_filters(_set)
+    print time.time() - st
+    #print _restart_server('two')
 
