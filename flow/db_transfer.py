@@ -9,7 +9,6 @@ def _restart_server(_set):
     with open(model_path+"nsfile.txt", "w") as text_file:
         text_file.write(_set)
     subprocess.call("ssh -i /home/ubuntu/iq-vision-dev.pem ubuntu@172.31.2.224 'sudo /home/ubuntu/dev/fashion-query-service/webapp/reload.sh'", shell=True)
-    assert _get_current_set()==_set
 
 
 def restart_server(**kwargs):
@@ -145,7 +144,8 @@ def get_alternate_set(**kwargs):
 
 
 if __name__ == "__main__":
-    print "alternate set : ", _get_alternate_set()
+    _set= _get_alternate_set()
+    print _set == 'two'
     _set = 'two'
     print "emyting aero"
     st = time.time()
@@ -163,5 +163,5 @@ if __name__ == "__main__":
     st = time.time()
     _create_annoy_for_filters(_set)
     print time.time() - st
-    #print _restart_server('two')
+#    print _restart_server(_set)
 
