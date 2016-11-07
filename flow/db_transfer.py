@@ -144,23 +144,24 @@ def get_alternate_set(**kwargs):
 
 
 if __name__ == "__main__":
-    print "alternate set : ", _get_alternate_set()
+    _set= _get_alternate_set()
+    print _set == 'two'
     _set = 'two'
     print "emyting aero"
     st = time.time()
-#    _empty_aero_set(_set)
+    _empty_aero_set(_set)
     print time.time()-st
     print "mongo2aero"
     st = time.time()
-#    _mongo2aero(_set)
+    _mongo2aero(_set)
     print time.time() - st
     print "annoy"
     st = time.time()
-#    _create_annoy_for_categories(_set)
+    _create_annoy_for_categories(_set)
     print time.time() - st
     print "filter annoy"
     st = time.time()
-#    _create_annoy_for_filters(_set)
+    _create_annoy_for_filters(_set)
     print time.time() - st
-    print _restart_server(_set)
+#    print _restart_server(_set)
 
