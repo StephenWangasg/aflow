@@ -28,8 +28,7 @@ def update_existing_urls(**kwargs):
         for row in csv.DictReader(open(current_parsed_path, 'rb'), delimiter='\t'):
             url = row["unique_url"]
             if url in same_urls:
-                row['hashedId'] = get_hashed_st(row['image_url'])
-                collection.update_one({'unique_url': url}, {"$set":row})
+                collection.update_one({'unique_url': url}, {"$set":{'display_price':row['display_price']}})
 
 
 def insert_new_urls(**kwargs):
@@ -90,7 +89,7 @@ def get_diff_urls(**kwargs):
                     'date': datetime.datetime.utcnow(),
                     'newCount':len(new_urls),
                     'deleteCount': len(delete_urls),
-                    'overlapCount': len(new_unique_urls & previous_unique_urls)
+                    'overlapCount': len(same_urls)
                 }
             }
         },
