@@ -1,6 +1,7 @@
 import hashlib, urllib2
 import requests, ast
-
+from boto.s3.connection import S3Connection
+from boto.s3.key import Key
 
 def get_hashed_st(st):
     m = hashlib.md5()
@@ -63,3 +64,14 @@ class ProductFeature:
         box = s1['detections'][0]['coord']
         attributes = self.classifier.get_attributes(query_img_path, box)
         return attributes
+
+def push2aws(img_path, name):
+    aws_access_key_id = 'AKIAIYWYKOG2DF5UHXNA'
+    aws_secret_access_key = '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'
+    conn = S3Connection(aws_access_key_id, aws_secret_access_key)
+    b = conn.get_bucket('iqfashion')
+    k = Key(b)
+    k.key = name+'.jpg'
+    k.set_contents_from_filename(img_path)
+    k.set_acl("public-read")
+    return 'https://s3.amazonaws.com/iqfashion/'+name+'.jpg'
