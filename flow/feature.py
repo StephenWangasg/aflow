@@ -10,13 +10,12 @@ def _feature_extraction(segmentation_server, classification_server):
     thumbnail_size = 500,500
     while True:
         try:
-            product = collection.find_and_modify(query={'extracted': False}, update={"$set": {'extracted': "processing"}},
-                                       upsert=False, full_response=True)['value']
-            #            product = collection.find_one({'extracted': False}, {'image_path': 1, 'image_url': 1})
+            product = collection.find_and_modify(
+                query={'extracted': False}, 
+                update={"$set": {'extracted': "processing", 'resized': 'processing'}},
+                upsert=False, 
+                full_response=True)['value']
             img_path = product['image_path']
-	    img_url = product['image_url']
-	    thumbnail_path = img_path + '_thumbnail.jpg'
-
             print img_path
             if not os.path.isfile(img_path):
                 try:
@@ -41,37 +40,38 @@ def _feature_extraction(segmentation_server, classification_server):
                     raise
 	    
 	    img_name_with_ext = product['image_name']
-	    img_name, img_ext = os.path.splitext(img_name_with_ext)
-	    thumbnail_url = ''
+	    img_name, _ = os.path.splitext(img_name_with_ext)
+	    thumbnail_path = img_path + '_thumbnail.jpg'
 	    try:
-		# create thumbnail
 		image = Image.open(img_path)
-		image.thumbnail(thumbnail_size, Image.ANTIALIAS)
-		image.save(thumbnail_path, "JPEG")
-        	# upload to aws
-		thumbnail_url = push2aws(thumbnail_path, img_name)
-	    except:
-		print "image resizing error"
-		continue
+	    	image.thumbnail(thumbnail_size, Image.ANTIALIAS)
+	    	image.save(thumbnail_path, "JPEG")
+	    	thumbnail_url = push2aws(thumbnail_path, img_name)
+		collection.update_one(
+                    {'image_path': img_path}, 
+                    {'$set': {'image_url_old': product['image_url'], 'image_url': thumbnail_url, 'resized':True}})
+	    except IOError:
+                print "io erroe while pushing 2 aws"
+                collection.update_one(
+                    {'image_path':img_path},
+                    {'$set':{'resized':"IOError", 'extracted':'resize error'}})
+                continue
+            except Exception as e:
+                print e
+                raise
 
 	    features = Features.get_feature(img_path)
             features['extracted'] = True
-	    features['image_url_old'] = img_url
-	    features['image_url'] = thumbnail_url
             collection.update_one({'image_path': img_path}, {'$set': features})
+
         except (KeyboardInterrupt, SystemExit):
             raise
-            #        except ConnectionError as e:
-            #            print e
-            #            time.sleep(600)
         except SyntaxError, e:
-            print os.path.getsize(img_path) > 0
             collection.update_one({'image_path': img_path}, {'$set': {'extracted': 'server_error'}})
             print "server error"
         except Exception as e:
             print e
             raise
-            print img_path
 
 
 def feature_extraction(**kwargs):
@@ -86,14 +86,6 @@ def extract_feature():
     classification_server = {'host': clas, 'port': '8000'}
     _feature_extraction(segmentation_server, classification_server)
 
-def change_paths():
-    for row in collection.find({},{'image_path':1, 'image_name':1}):
-        if 'new_models' in row['image_path']:
-            img_path = feed_images_path + row['image_name']
-#            break
-            collection.update_one({'image_name': row['image_name']}, {'$set': {'image_path':img_path}})
 
 if __name__ == '__main__':
-    #extract_feature()
     _feature_extraction(segmentation_server, classification_server)
-    #change_paths()
