@@ -12,5 +12,5 @@ invalid_words = [
         'Cooler','Beard','Wax','Game','Blood','Headphones', 'Bandana', 'Scarf'
 ]
 
-keys = ['product_name', 'gender', 'price', 'disc_price', 'display_price', 'currency', 'product_url', 'image_url',
+keys = ['product_name', 'price', 'disc_price', 'display_price', 'currency', 'product_url', 'image_url',
         'unique_url']
