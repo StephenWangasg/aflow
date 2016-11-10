@@ -18,3 +18,16 @@ pip install boto
 3. feature.py
  cd ../flow
  PYTHONPATH=.. python feature.py
+4. nginx and uwsgi
+# For the 1st time you run uwsgi on a machine
+# step 1. create a master fifo file
+vim /tmp/uwsgi_fifo
+# Step 2. start the uwsgi in chain reloading mode for gracefull reloading
+uwsgi --ini webapp_uwsgi.ini --lazy-apps --master-fifo /tmp/uwsgi_fifo
+# Next time when you want to restart uwsgi for code updates or bug fixes:
+echo c > /tmp/uwsgi_fifo
+# To kill existing uwsgi processes (if necessary):
+#show uwsgi processes
+ps -eaf | grep uwsgi
+#kill uwsgi
+kill -9 [process number]
