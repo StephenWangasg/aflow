@@ -45,6 +45,11 @@ def _feature_extraction():
             print img_path
         print count, succeeded
 
-
+def revert2old():
+    for p in collection.find({'extracted':True},{'image_path':1, 'image_url_old':1, 'resized':1}):
+        if p.has_key('resized')  and p.has_key('image_url_old') and p['resized']:
+            collection.update_one({'image_path': p['image_path']}, {'$set': {'image_url': p['image_url_old'], 'resized':False}})
+            print 'd'
 if __name__ == '__main__':
-    _feature_extraction()
+    #_feature_extraction()
+    revert2old()
