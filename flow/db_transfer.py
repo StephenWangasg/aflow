@@ -146,7 +146,7 @@ def get_alternate_set(**kwargs):
 if __name__ == "__main__":
     _set= _get_alternate_set()
     print _set == 'two'
-    _set = 'two'
+#    _set = 'two'
     print "emyting aero"
     st = time.time()
     _empty_aero_set(_set)
@@ -163,5 +163,5 @@ if __name__ == "__main__":
     st = time.time()
     _create_annoy_for_filters(_set)
     print time.time() - st
-#    print _restart_server(_set)
+    print _restart_server(_set)
 
