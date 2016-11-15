@@ -7,7 +7,8 @@ from PIL import Image
 
 def _feature_extraction(segmentation_server, classification_server):
     Features = ProductFeature(segmentation_server, classification_server)
-    thumbnail_size = 500,500
+    thumbnail_size = 1000,1000
+    thumbnail_quality = 80
     while True:
         try:
             product = collection.find_and_modify(
@@ -45,7 +46,7 @@ def _feature_extraction(segmentation_server, classification_server):
 	    try:
 		image = Image.open(img_path)
 	    	image.thumbnail(thumbnail_size, Image.ANTIALIAS)
-	    	image.save(thumbnail_path, "JPEG")
+	    	image.save(thumbnail_path, "JPEG", quality=thumbnail_quality)
 	    	thumbnail_url = push2aws(thumbnail_path, img_name)
 		collection.update_one(
                     {'image_path': img_path}, 

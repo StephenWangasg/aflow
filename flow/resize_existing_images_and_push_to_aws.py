@@ -6,13 +6,14 @@ import urllib2, socket
 from PIL import Image
  
 def _feature_extraction():
-    thumbnail_size = 500,500
+    thumbnail_size = 1000,1000
+    thumbnail_quality = 80
     count = 0
     succeeded = 0
     while True:
         try:
 	    count += 1
-            product = collection.find_and_modify(query={'resized': {'$exists': False}, 'extracted':True}, update={"$set": {'resized': "processing"}},
+            product = collection.find_and_modify(query={'resized': False, 'extracted':True}, update={"$set": {'resized': "processing"}},
                                        upsert=False, full_response=True)['value']
             img_path = product['image_path']
 	    img_url = product['image_url']
@@ -23,7 +24,7 @@ def _feature_extraction():
 		# create thumbnail
 		image = Image.open(img_path)
 		image.thumbnail(thumbnail_size, Image.ANTIALIAS)
-		image.save(thumbnail_path, "JPEG")
+		image.save(thumbnail_path, "JPEG", quality=thumbnail_quality)
         	# upload to aws
 		thumbnail_url = push2aws(thumbnail_path, img_name)
 	        collection.update_one({'image_path': img_path}, {'$set': {'image_url_old': img_url, 'image_url': thumbnail_url, 'resized':True}})
@@ -51,5 +52,5 @@ def revert2old():
             collection.update_one({'image_path': p['image_path']}, {'$set': {'image_url': p['image_url_old'], 'resized':False}})
             print 'd'
 if __name__ == '__main__':
-    #_feature_extraction()
-    revert2old()
+    _feature_extraction()
+    #revert2old()
