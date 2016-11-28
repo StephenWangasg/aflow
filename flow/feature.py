@@ -16,6 +16,12 @@ def _feature_extraction(segmentation_server, classification_server):
                 update={"$set": {'extracted': "processing", 'resized': 'processing'}},
                 upsert=False, 
                 full_response=True)['value']
+
+            if product is None:
+		print 'No record to process. Sleeping 5 seconds'
+		time.sleep(5)
+		continue
+ 
             img_path = product['image_path']
             print img_path
             if not os.path.isfile(img_path):
@@ -64,6 +70,12 @@ def _feature_extraction(segmentation_server, classification_server):
 	    features = Features.get_feature(img_path)
             features['extracted'] = True
             collection.update_one({'image_path': img_path}, {'$set': features})
+
+	    if os.path.isfile(img_path):
+		os.remove(img_path)
+
+	    if os.path.isfile(thumbnail_path):
+		os.remove(thumbnail_path)
 
         except (KeyboardInterrupt, SystemExit):
             raise
