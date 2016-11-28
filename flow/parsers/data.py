@@ -7,9 +7,10 @@ invalid_words = [
         'babies', 'panties', 'ipad cover', 'sleepwear', 'beach wear', 'thong', 'silicone', 'qyt', 'leg support',
         'wrap-around', 'Cyber Women Flare Sleeve Lace Patchwork Stretch Pleated Hem Plus Blouse', 'macbook', 'kid',
         'box', 'cincher', 'underwear', 'mask', 'beachwear', 'one piece', 'camera', 'pajama', 'bandeau' , 'trimmer',
-        'Pencil Case', 'Stickers', 'Hip Flask', 'Water Bottle', 'foulard', 'Hardware', 'Hair', 'Hairbrush',
-        'Toni & Guy', 'Shot Glasses', 'Body Wash', 'Shave Gel', 'Backpack', 'Frisbee', 'Book', 'Pomade', 'Poster',
-        'Cooler','Beard','Wax','Game','Blood','Headphones', 'Bandana', 'Scarf'
+        'pencil case', 'stickers', 'hip flask', 'water bottle', 'foulard', 'hardware', 'hair', 'hairbrush',
+        'toni & guy', 'shot glasses', 'body wash', 'shave gel', 'backpack', 'frisbee', 'book', 'pomade', 'poster',
+        'cooler','beard','wax','game','blood','headphones', 'bandana', 'scarf', 'shaver', 'table','wireless','example','mosquito','mug','stainless steel',
+	'handlebar','bicycle','motorbike', 'gloves', 'portable', 'bike','paintball','alluminum','paddles','fishing','goggles'
 ]
 
 keys = ['product_name', 'price', 'disc_price', 'display_price', 'currency', 'product_url', 'image_url',
