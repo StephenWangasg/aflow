@@ -15,7 +15,11 @@ def _feature_extraction():
 	    count += 1
             product = collection.find_and_modify(query={'resized': False, 'extracted':True}, update={"$set": {'resized': "processing"}},
                                        upsert=False, full_response=True)['value']
-            img_path = product['image_path']
+            if product is None:
+		time.sleep(1)
+		continue
+	
+	    img_path = product['image_path']
 	    img_url = product['image_url']
 	    thumbnail_path = img_path + '_thumbnail.jpg'
 	    img_name_with_ext = product['image_name']
