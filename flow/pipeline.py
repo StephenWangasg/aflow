@@ -11,7 +11,7 @@ def delete_old_urls(**kwargs):
     delete_urls = ti.xcom_pull(key='delete_urls', task_ids='get_diff_urls')
     for delete_url in list(delete_urls):
         collection.remove({'unique_url': delete_url})
-
+    return len(delete_urls)
 
 def download_images(**kwargs):
     ti = kwargs['ti']
@@ -53,7 +53,7 @@ def insert_new_urls(**kwargs):
                     continue 
                 image_paths.append((row['image_url'], row['image_path']))
     kwargs['ti'].xcom_push(key='image_paths', value=image_paths)
-
+    return len(new_urls)
 
 def get_unique_urls_from_db(**kwargs):
     website = kwargs['website']
@@ -62,6 +62,7 @@ def get_unique_urls_from_db(**kwargs):
     for row in collection.find({'site':website, 'location':country},{'unique_url':1}):
         previous_unique_urls.add(row['unique_url'])
     kwargs['ti'].xcom_push(key='previous_unique_urls', value=previous_unique_urls)
+    return len(previous_unique_urls)
 
 
 def get_unique_urls_from_csv(**kwargs):
@@ -69,6 +70,7 @@ def get_unique_urls_from_csv(**kwargs):
     new_csv = csv.DictReader(open(new_parsed_path, 'rb'), delimiter='\t')
     new_unique_urls = set([_['unique_url'] for _ in new_csv])
     kwargs['ti'].xcom_push(key='new_unique_urls', value=new_unique_urls)
+    return len(new_unique_urls)
 
 
 def get_diff_urls(**kwargs):
@@ -97,3 +99,5 @@ def get_diff_urls(**kwargs):
     kwargs['ti'].xcom_push(key='delete_urls', value=delete_urls)
     kwargs['ti'].xcom_push(key='new_urls', value=new_urls)
     kwargs['ti'].xcom_push(key='same_urls', value=same_urls)
+
+    return len(new_urls),len(delete_urls),len(same_urls)
