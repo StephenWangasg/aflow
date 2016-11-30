@@ -24,7 +24,7 @@ op_kwargs = {
     'map': [
         ('image_url', 'picture_url'),
         ('product_url', 'tracking_link'),
-        ('unique_url', 'tracking_link')
+        ('unique_url', 'picture_url')
       ],
     'cats': []
 }
