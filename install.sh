@@ -10,6 +10,10 @@ sudo pip install Pillow
 # install boto
 pip install boto
 
+############### airflow ####################
+if you see errors such as 'failed to connect to cluster...', try clear system cache first before starting airflow server:
+echo 3 > /proc/sys/vm/drop_caches
+
 ############ run services #############################
 1. start airflow server
  airflow webserver -hn 0.0.0.0 -p 8080
