@@ -7,10 +7,10 @@ from airflow.operators.python_operator import PythonOperator
 
 
 default_args = {
-    'owner': 'raja',
+    'owner': 'iqnect',
     'depends_on_past': False,
-    'start_date': datetime(2016,11,15),
-    'email':['raja@iqnect.org'],
+    'start_date': datetime(2016,12,1,16,0,0),
+    'email':['xuejie.zhang@iqnect.org'],
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
