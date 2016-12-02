@@ -3,6 +3,7 @@ from flow.config import segmentation_server, classification_server, collection, 
 from requests.exceptions import ConnectionError
 from flow.utils import ProductFeature, download_image_from_url, push2aws
 import urllib2, socket
+from httplib import BadStatusLine
 from PIL import Image
 
 def _feature_extraction(segmentation_server, classification_server):
@@ -16,6 +17,12 @@ def _feature_extraction(segmentation_server, classification_server):
                 update={"$set": {'extracted': "processing", 'resized': 'processing'}},
                 upsert=False, 
                 full_response=True)['value']
+
+            if product is None:
+                print 'No record to process. Sleeping 5 seconds'
+                time.sleep(5)
+                continue
+
             img_path = product['image_path']
             print img_path
             if not os.path.isfile(img_path):
@@ -23,7 +30,7 @@ def _feature_extraction(segmentation_server, classification_server):
                     download_image_from_url(product['image_url'], img_path)
                 except (KeyboardInterrupt, SystemExit):
                     raise
-                except ValueError:
+                except ValueError, BadStatusLine:
                     print "value error"
                     collection.update_one({'image_path': img_path}, {'$set': {'extracted': 'download_error_url'}})
                     continue
