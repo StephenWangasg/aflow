@@ -4,12 +4,27 @@ sys.path.insert(0, flow_folder)
 from flow.pipeline import get_diff_urls, delete_old_urls, insert_new_urls, download_images, get_unique_urls_from_db, get_unique_urls_from_csv, update_existing_urls
 from datetime import datetime, timedelta
 from airflow.operators.python_operator import PythonOperator
+import copy
 
+# use the current date minus 2 days as the start date
+#date_now = datetime.now()-timedelta(days=2)
+#base_start_date = date_now.replace(hour=15,minute=0,second=0)
+
+# manually set the start date
+base_start_date = datetime(2016,12,4,15,0,0) # 15pm UTC, which is 23pm in singapore
+
+currency_start_date = base_start_date
+asos_start_date = base_start_date + timedelta(minutes = 2)
+farfetch_start_date = base_start_date + timedelta(minutes = 10)
+lazada_start_date = base_start_date + timedelta(minutes = 30)
+yoox_start_date = base_start_date + timedelta(hours = 1)
+zalora_start_date = base_start_date + timedelta(minutes = 50)
+updatedb_start_date = base_start_date + timedelta(hours = 3)
 
 default_args = {
     'owner': 'iqnect',
     'depends_on_past': False,
-    'start_date': datetime(2016,12,1,16,0,0),
+    'start_date': base_start_date,
     'email':['xuejie.zhang@iqnect.org'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -17,6 +32,21 @@ default_args = {
     'retry_delay': timedelta(minutes=30),
 }
 
+currency_args = copy.deepcopy(default_args)
+asos_args = copy.deepcopy(default_args)
+farfetch_args = copy.deepcopy(default_args)
+lazada_args = copy.deepcopy(default_args)
+yoox_args = copy.deepcopy(default_args)
+zalora_args = copy.deepcopy(default_args)
+updatedb_args = copy.deepcopy(default_args)
+
+currency_args['start_date'] = currency_start_date
+asos_args['start_date'] = asos_start_date
+farfetch_args['start_date'] = farfetch_start_date
+lazada_args['start_date'] = lazada_start_date
+yoox_args['start_date'] = yoox_start_date
+zalora_args['start_date'] = zalora_start_date
+updatedb_args['start_date'] = updatedb_start_date
 
 def get_sub_dag(op_kwargs, dag):
 

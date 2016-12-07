@@ -7,10 +7,10 @@ from airflow.operators.python_operator import PythonOperator
 from flow.downloaders.utils import raukuten_download
 from flow.parsers.utils import parse_write
 from flow.config import data_feed_path
-from flow.dags.utils import default_args, get_sub_dag
+from flow.dags.utils import farfetch_args, get_sub_dag
 
 
-dag = DAG('farfetch', default_args=default_args)
+dag = DAG('farfetch', default_args=farfetch_args)
 
 website = 'farfetch'
 country = 'global'

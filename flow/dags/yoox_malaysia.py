@@ -7,9 +7,9 @@ from airflow.operators.python_operator import PythonOperator
 from flow.downloaders.utils import yoox_download
 from flow.parsers.utils import parse_write
 from flow.config import data_feed_path
-from flow.dags.utils import default_args, get_sub_dag
+from flow.dags.utils import yoox_args, get_sub_dag
 
-dag = DAG('yoox_malaysia', default_args=default_args)
+dag = DAG('yoox_malaysia', default_args=yoox_args)
 
 website = 'yoox'
 country = 'malaysia'
