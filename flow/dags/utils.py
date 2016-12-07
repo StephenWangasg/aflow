@@ -11,7 +11,7 @@ import copy
 #base_start_date = date_now.replace(hour=15,minute=0,second=0)
 
 # manually set the start date
-base_start_date = datetime(2016,12,4,15,0,0) # 15pm UTC, which is 23pm in singapore
+base_start_date = datetime(2016,12,5,15,0,0) # 15pm UTC, which is 23pm in singapore
 
 currency_start_date = base_start_date
 asos_start_date = base_start_date + timedelta(minutes = 2)
