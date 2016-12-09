@@ -19,8 +19,8 @@ def _feature_extraction(segmentation_server, classification_server):
                 full_response=True)['value']
 
             if product is None:
-		print 'No record to process. Sleeping 5 seconds'
-		time.sleep(5)
+		print 'No record to process. Sleeping 5 minutes'
+		time.sleep(300)
 		continue
  
             img_path = product['image_path']
