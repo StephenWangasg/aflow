@@ -7,9 +7,9 @@ from airflow.operators.python_operator import PythonOperator
 from flow.downloaders.utils import lazada_download
 from flow.parsers.utils import parse_write
 from flow.config import data_feed_path
-from flow.dags.utils import default_args, get_sub_dag
+from flow.dags.utils import lazada_args, get_sub_dag
 
-dag = DAG('lazada_indonesia', default_args=default_args)
+dag = DAG('lazada_indonesia', default_args=lazada_args)
 
 website = 'lazada'
 country = 'indonesia'
@@ -24,7 +24,7 @@ op_kwargs = {
     'map': [
         ('image_url', 'picture_url'),
         ('product_url', 'tracking_link'),
-        ('unique_url', 'tracking_link')
+        ('unique_url', 'picture_url')
       ],
     'cats': []
 }

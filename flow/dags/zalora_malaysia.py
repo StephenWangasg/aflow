@@ -7,9 +7,9 @@ from airflow.operators.python_operator import PythonOperator
 from flow.downloaders.utils import zalora_download
 from flow.parsers.utils import parse_write
 from flow.config import data_feed_path
-from flow.dags.utils import default_args, get_sub_dag
+from flow.dags.utils import zalora_args, get_sub_dag
 
-dag = DAG('zalora_malaysia', default_args=default_args)
+dag = DAG('zalora_malaysia', default_args=zalora_args)
 
 website = 'zalora'
 country = 'malaysia'

@@ -19,5 +19,5 @@ import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'db_status$', views.get_db_status),
+    url(r'db_status$', views.get_db_status_xuejie),
 ]

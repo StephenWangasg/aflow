@@ -7,9 +7,9 @@ from airflow.operators.python_operator import PythonOperator
 from flow.downloaders.utils import raukuten_download
 from flow.parsers.utils import parse_write
 from flow.config import data_feed_path
-from flow.dags.utils import default_args, get_sub_dag
+from flow.dags.utils import asos_args, get_sub_dag
 
-dag = DAG('asos', default_args=default_args)
+dag = DAG('asos', default_args=asos_args)
 
 website = 'asos'
 country = 'global'
@@ -21,7 +21,7 @@ op_kwargs = {
     'website': website,
     'country': country,
     "affiliate_name": "ASOS",
-    "feed_url": "ftp://iQNECT:n39PzPcw@aftp.linksynergy.com/37863_3301502_mp.txt.gz",
+    "feed_url": "ftp://iQNECT:n39PzPcw@aftp.linksynergy.com/41970_3301502_mp.txt.gz",
     "prepend_header": "product_id|product_name|sku|primary_cat|secondary_cat|product_url|image_url|c8|c9|c10|c11|c12|sale_price|retail_price|c15|c16|c17|c18|c19|c20|c21|c22|c23|c24|c25|currency|c27|c28|c29|c30|c31|c32|c33|c34|c35|c36|c37|c38\n",
 
     "cats": [

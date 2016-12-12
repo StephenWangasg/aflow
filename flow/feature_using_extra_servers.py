@@ -19,10 +19,10 @@ def _feature_extraction(segmentation_server, classification_server):
                 full_response=True)['value']
 
             if product is None:
-		print 'No record to process. Sleeping 5 minutes'
-		time.sleep(300)
-		continue
- 
+                print 'No record to process. Sleeping 5 seconds'
+                time.sleep(5)
+                continue
+
             img_path = product['image_path']
             print img_path
             if not os.path.isfile(img_path):
@@ -30,7 +30,7 @@ def _feature_extraction(segmentation_server, classification_server):
                     download_image_from_url(product['image_url'], img_path)
                 except (KeyboardInterrupt, SystemExit):
                     raise
-                except ValueError,BadStatusLine:
+                except ValueError, BadStatusLine:
                     print "value error"
                     collection.update_one({'image_path': img_path}, {'$set': {'extracted': 'download_error_url'}})
                     continue
@@ -72,12 +72,6 @@ def _feature_extraction(segmentation_server, classification_server):
             features['extracted'] = True
             collection.update_one({'image_path': img_path}, {'$set': features})
 
-	    if os.path.isfile(img_path):
-		os.remove(img_path)
-
-	    if os.path.isfile(thumbnail_path):
-		os.remove(thumbnail_path)
-
         except (KeyboardInterrupt, SystemExit):
             raise
         except SyntaxError, e:
@@ -102,4 +96,4 @@ def extract_feature():
 
 
 if __name__ == '__main__':
-    _feature_extraction(segmentation_server, classification_server)
+    extract_feature()

@@ -6,7 +6,7 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 import requests, redis
 from flow.config import query_server
-from flow.dags.utils import default_args
+from flow.dags.utils import currency_args
 
 def get_current_rates():
     sources = ['USD', 'AUD', 'GBP', 'SGD', 'MYR', 'IDR']
@@ -28,7 +28,7 @@ def cache_currency(**kwargs):
     currency_cache.set('currencies', str(conversions))
     print conversions
 
-dag = DAG('price_conversion', default_args=default_args)
+dag = DAG('price_conversion', default_args=currency_args)
 
 t1 = PythonOperator(
     task_id='update_currency_conversion',
