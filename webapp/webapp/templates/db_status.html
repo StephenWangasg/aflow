@@ -1,0 +1,31 @@
+{% extends "table.html" %}
+
+{% block content %}
+  <tr>
+    <th>Site</th>
+    <th>Location</th>
+    <th>Count</th>
+    <th>Feature extracted</th>
+    <th>To be extracted</th>
+    <th>Not proper image URL</th>
+    <th>404 on image URL</th>
+    <th>Timeout for download</th>
+    <th>Server error</th>
+  </tr>
+  {% for r in result %}
+  <tr>
+    <td data-th="Site">{{ r.site }}</td>
+    <td data-th="Location">{{ r.location }}</td>
+    <td>{{ r.total }}</td>
+    <td>{{ r.True }}</td>
+    <td>{{ r.False }}</td>
+    <td>{{ r.download_error_url }}</td>
+    <td>{{ r.download_error_url_404 }}</td>
+    <td>{{ r.download_error_url_timeout }}</td>
+    <td>{{ r.server_error }}</td>
+  </tr>
+  {% endfor %}
+{% endblock %}
+~                                                                                                                                                 
+~                                                                                                                                                 
+~                             
