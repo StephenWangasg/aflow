@@ -1,0 +1,12 @@
+{% load static %}
+<head>
+<link rel="stylesheet" type="text/css" href="{% static 'css/theme.css' %}">
+</head>
+
+<body>
+<h1>{{ title }}</h1>
+<table class="rwd-table">
+  {% block content %}
+  {% endblock %}
+</table>
+</body>
