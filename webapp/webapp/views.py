@@ -1,4 +1,9 @@
 import csv
+import redis
+import ast
+
+from flow import config
+
 
 from pymongo import MongoClient
 from django import db
@@ -79,11 +84,12 @@ def export_gmvs(request):
     response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['Site', 'Location', 'Count', 'GMV'])
+    writer.writerow(['Site', 'Location', 'Count', 'GMV (Default currency)', 'GMV (USD)',])
 
-    records = gmv_collection.find()
+    records = query_gmvs()
     for r in records:
-        writer.writerow([r['site'], r['location'], r['count'], r['gmv'],])
+        if r['count'] > 0:
+            writer.writerow([r['site'], r['location'], r['count'], r['gmv'], r['usd'],])
 
     return response
 
@@ -112,18 +118,6 @@ def query_db_status():
                 res[status] = count
             res_list.append(res)
 
-    def compare_res_dict(dict1, dict2):
-        if dict1['site'] < dict2['site']:
-            return -1
-        elif dict1['site'] > dict2['site']:
-            return 1
-        else:
-            if dict1['location'] < dict2['location']:
-                return -1
-            elif dict1['location'] > dict2['location']:
-                return 1
-            else:
-                return 0
     res_list.sort(cmp=compare_res_dict)
 
     # Calculate total
@@ -160,7 +154,52 @@ def query_db_status():
 
 
 def query_gmvs():
-    gmvs = gmv_collection.find()
-    # Convert price
+    currency_cache = redis.StrictRedis(host=config.query_server['host'], port=6379, db=0)
+    exist = currency_cache.get('currencies')
+    conversions = ast.literal_eval(exist)
+
+    records = gmv_collection.find()
+    res_list = []
+    # Calculate GMV in USD
+    for r in records:
+        key = r['currency'] + 'USD' 
+        mult = conversions[key]
+        res = {
+            'site': r['site'],
+            'location': r['location'],
+            'count': r['count'],
+            'currency': r['currency'],
+            'gmv': r['gmv'],
+            'usd': r['gmv'] * mult,
+        }
+        res_list.append(res)
+
+    res_list.sort(cmp=compare_res_dict)
+       
     # Calculate total
-    return gmvs
+    count_total = 0
+    gmv_total = 0.0
+    for r in res_list:
+        count_total += r['count']
+        gmv_total += r['usd']
+    res_list.append({
+        'site': 'Total',
+        'location': '',
+        'count': count_total,
+        'gmv': '',
+        'usd': gmv_total,
+    })
+    return res_list
+
+def compare_res_dict(dict1, dict2):
+    if dict1['site'] < dict2['site']:
+        return -1
+    elif dict1['site'] > dict2['site']:
+        return 1
+    else:
+        if dict1['location'] < dict2['location']:
+            return -1
+        elif dict1['location'] > dict2['location']:
+            return 1
+        else:
+            return 0

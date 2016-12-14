@@ -6,13 +6,13 @@
   <tr>
     <th>Site</th>
     <th>Location</th>
-    <th>Count</th>
-    <th>Feature extracted</th>
-    <th>To be extracted</th>
-    <th>Not proper image URL</th>
-    <th>404 on image URL</th>
-    <th>Timeout for download</th>
-    <th>Server error</th>
+    <th class="alnright">Count</th>
+    <th class="alnright">Feature extracted</th>
+    <th class="alnright">To be extracted</th>
+    <th class="alnright">Not proper image URL</th>
+    <th class="alnright">404 on image URL</th>
+    <th class="alnright">Timeout for download</th>
+    <th class="alnright">Server error</th>
   </tr>
   {% for r in result %}
     {% if r.total > 0 %}
@@ -23,13 +23,13 @@
       {% endif %}
         <td data-th="Site">{{ r.site }}</td>
         <td data-th="Location">{{ r.location }}</td>
-        <td>{{ r.total|intcomma }}</td>
-        <td>{{ r.True|intcomma }}</td>
-        <td>{{ r.False|intcomma }}</td>
-        <td>{{ r.download_error_url|intcomma }}</td>
-        <td>{{ r.download_error_url_404|intcomma }}</td>
-        <td>{{ r.download_error_url_timeout|intcomma }}</td>
-        <td>{{ r.server_error|intcomma }}</td>
+        <td class="alnright">{{ r.total|intcomma }}</td>
+        <td class="alnright">{{ r.True|intcomma }}</td>
+        <td class="alnright">{{ r.False|intcomma }}</td>
+        <td class="alnright">{{ r.download_error_url|intcomma }}</td>
+        <td class="alnright">{{ r.download_error_url_404|intcomma }}</td>
+        <td class="alnright">{{ r.download_error_url_timeout|intcomma }}</td>
+        <td class="alnright">{{ r.server_error|intcomma }}</td>
       </tr>
     {% endif %}
   {% endfor %}
