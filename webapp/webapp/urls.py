@@ -21,6 +21,8 @@ import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^db_status$', views.get_db_status),
-    url(r'^gmv$', views.get_gmvs),
+    url(r'^db_status/?$', views.get_db_status),
+    url(r'^db_status/export/?$', views.export_db_status),
+    url(r'^gmv/?$', views.get_gmvs),
+    url(r'^gmv/export/?$', views.export_gmvs),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

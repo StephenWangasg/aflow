@@ -1,6 +1,8 @@
 {% extends "table.html" %}
+{% load humanize %}
 
 {% block content %}
+  <a href="db_status/export">Download as CSV</a>
   <tr>
     <th>Site</th>
     <th>Location</th>
@@ -13,17 +15,23 @@
     <th>Server error</th>
   </tr>
   {% for r in result %}
-  <tr>
-    <td data-th="Site">{{ r.site }}</td>
-    <td data-th="Location">{{ r.location }}</td>
-    <td>{{ r.total }}</td>
-    <td>{{ r.True }}</td>
-    <td>{{ r.False }}</td>
-    <td>{{ r.download_error_url }}</td>
-    <td>{{ r.download_error_url_404 }}</td>
-    <td>{{ r.download_error_url_timeout }}</td>
-    <td>{{ r.server_error }}</td>
-  </tr>
+    {% if r.total > 0 %}
+      {% if r.location %}
+      <tr>
+      {% else %}
+      <tr style="color: #dd5; font-weight:bold">
+      {% endif %}
+        <td data-th="Site">{{ r.site }}</td>
+        <td data-th="Location">{{ r.location }}</td>
+        <td>{{ r.total|intcomma }}</td>
+        <td>{{ r.True|intcomma }}</td>
+        <td>{{ r.False|intcomma }}</td>
+        <td>{{ r.download_error_url|intcomma }}</td>
+        <td>{{ r.download_error_url_404|intcomma }}</td>
+        <td>{{ r.download_error_url_timeout|intcomma }}</td>
+        <td>{{ r.server_error|intcomma }}</td>
+      </tr>
+    {% endif %}
   {% endfor %}
 {% endblock %}
 ~                                                                                                                                                 
