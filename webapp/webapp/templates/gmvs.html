@@ -2,18 +2,27 @@
 {% load humanize %}
 
 {% block content %}  
+  <a href="gmv/export">Download as CSV</a>
   <tr>
     <th>Site</th>
     <th>Location</th>
-    <th>Count</th>
-    <th>GMV</th>
+    <th class="alnright">Count</th>
+    <th class="alnright">GMV (Default currency)</th>
+    <th class="alnright">GMV (USD)</th>
   </tr>
   {% for r in records %}
-  <tr>
-    <td data-th="Site">{{ r.site }}</td>
-    <td data-th="Location">{{ r.location }}</td>
-    <td data-th="Count">{{ r.count }}</td>
-    <td data-th="GMV">{{ r.gmv|intcomma }}</td>
-  </tr>
+    {% if r.count > 0 %}
+      {% if r.location %}
+      <tr>
+      {% else %}
+      <tr style="color: #dd5; font-weight:bold">
+      {% endif %}
+        <td data-th="Site">{{ r.site }}</td>
+        <td data-th="Location">{{ r.location }}</td>
+        <td data-th="Count" class="alnright">{{ r.count|intcomma }}</td>
+        <td data-th="GMV (Default currency)" class="alnright">{% if r.location %}{{ r.gmv|floatformat:2|intcomma }} ({{ r.currency }}){% endif %}</td>
+        <td data-th="GMV (USD)" class="alnright">{{ r.usd|floatformat:2|intcomma }}</td>
+      </tr>
+    {% endif %}
   {% endfor %}
 {% endblock %}

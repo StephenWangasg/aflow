@@ -81,3 +81,5 @@ h1 {
 .rwd-table th, .rwd-table td:before {
   color: #dd5;
 }
+
+.alnright { text-align: right !important; }
