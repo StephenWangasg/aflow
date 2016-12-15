@@ -75,15 +75,20 @@ def yoox_download(**kwargs):
     feed_list_url_file.write(all_affiliate_names)
     feed_list_url_file.close()
 
+    downloaded = False
     with open(download_file_path + '.csv', 'rt') as f:
         reader = csv.reader(f, delimiter=',')
         for row in reader:
             if affiliate_name == row[1]:
                 feed_url = row[8]
                 download_http_file(feed_url, download_file_path)
+		downloaded = True
                 break
 
-    return feed_list_url
+    if downloaded:
+	return feed_list_url
+    else:
+	return 'download failed'
 
 
 def zalora_download(**kwargs):
