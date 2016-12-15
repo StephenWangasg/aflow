@@ -4,10 +4,10 @@ sys.path.insert(0, flow_folder)
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from flow.dags.utils import asos_args
+from flow.dags.utils import gmv_args
 from flow.calculate_gmv import calculate_gmv
 
-dag = DAG('calculate_gmv', default_args=asos_args)
+dag = DAG('calculate_gmv', default_args=gmv_args)
 
 t1 = PythonOperator(
     task_id='calculate_gmv',

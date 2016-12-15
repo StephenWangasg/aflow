@@ -7,19 +7,21 @@ from airflow.operators.python_operator import PythonOperator
 import copy
 
 # use the current date minus 2 days as the start date
-#date_now = datetime.now()-timedelta(days=2)
-#base_start_date = date_now.replace(hour=15,minute=0,second=0)
+date_now = datetime.now()-timedelta(days=2)
+base_start_date = date_now.replace(hour=15,minute=0,second=0)
 
 # manually set the start date
-base_start_date = datetime(2016,12,5,15,0,0) # 15pm UTC, which is 23pm in singapore
+#base_start_date = datetime(2016,12,5,15,0,0) # 15pm UTC, which is 23pm in singapore
 
 currency_start_date = base_start_date
-asos_start_date = base_start_date + timedelta(minutes = 2)
-farfetch_start_date = base_start_date + timedelta(minutes = 10)
-lazada_start_date = base_start_date + timedelta(minutes = 30)
-yoox_start_date = base_start_date + timedelta(hours = 1)
-zalora_start_date = base_start_date + timedelta(minutes = 50)
-updatedb_start_date = base_start_date + timedelta(hours = 3)
+asos_start_date = base_start_date + timedelta(minutes = 1)
+farfetch_start_date = base_start_date + timedelta(minutes = 5)
+lazada_start_date = base_start_date + timedelta(minutes = 20)
+yoox_start_date = base_start_date + timedelta(minutes = 40)
+zalora_start_date = base_start_date + timedelta(hours = 1)
+updatedb_start_date = base_start_date + timedelta(hours = 2)
+gmv_start_date = base_start_date + timedelta(minutes = 2)
+db_status_start_date = base_start_date + timedelta(minutes = 3)
 
 default_args = {
     'owner': 'iqnect',
@@ -39,6 +41,8 @@ lazada_args = copy.deepcopy(default_args)
 yoox_args = copy.deepcopy(default_args)
 zalora_args = copy.deepcopy(default_args)
 updatedb_args = copy.deepcopy(default_args)
+gmv_args = copy.deepcopy(default_args)
+db_status_args = copy.deepcopy(default_args)
 
 currency_args['start_date'] = currency_start_date
 asos_args['start_date'] = asos_start_date
@@ -47,6 +51,8 @@ lazada_args['start_date'] = lazada_start_date
 yoox_args['start_date'] = yoox_start_date
 zalora_args['start_date'] = zalora_start_date
 updatedb_args['start_date'] = updatedb_start_date
+gmv_args['start_date'] = gmv_start_date
+db_status_args['start_date'] = db_status_start_date
 
 def get_sub_dag(op_kwargs, dag):
 

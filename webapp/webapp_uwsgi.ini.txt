@@ -27,4 +27,4 @@ pythonpath       = ..
 daemonize        = /tmp/uwsgi.log
 #plugin           = python27
 
-max-requests = 200
+max-requests = 20000
