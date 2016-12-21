@@ -10,7 +10,7 @@ invalid_words = [
         'pencil case', 'stickers', 'hip flask', 'water bottle', 'foulard', 'hardware', 'hair', 'hairbrush',
         'toni & guy', 'shot glasses', 'body wash', 'shave gel', 'backpack', 'frisbee', 'book', 'pomade', 'poster',
         'cooler','beard','wax','game','blood','headphones', 'bandana', 'scarf', 'shaver', 'table','wireless','example','mosquito','mug','stainless steel',
-	'handlebar','bicycle','motorbike', 'gloves', 'portable', 'bike','paintball','alluminum','paddles','fishing','goggles'
+	'handlebar','bicycle','motorbike', 'gloves', 'portable', 'bike','paintball','alluminum','paddles','fishing','goggles','yoga'
 ]
 
 keys = ['product_name', 'price', 'disc_price', 'display_price', 'currency', 'product_url', 'image_url',
