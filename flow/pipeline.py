@@ -77,9 +77,16 @@ def get_diff_urls(**kwargs):
     ti = kwargs['ti']
     new_unique_urls = ti.xcom_pull(key='new_unique_urls', task_ids='get_unique_urls_from_csv')
     previous_unique_urls = ti.xcom_pull(key='previous_unique_urls', task_ids='get_unique_urls_from_db')
-    delete_urls = previous_unique_urls - new_unique_urls
-    new_urls = new_unique_urls - previous_unique_urls
-    same_urls = new_unique_urls & previous_unique_urls
+    
+    if new_unique_urls is None or len(new_unique_urls)==0: # when download error happens, no new urls parsed from previous step
+        delete_urls = set()
+        new_urls = set()
+        same_urls = set()
+    else: # normal url comparision operation
+        delete_urls = previous_unique_urls - new_unique_urls
+        new_urls = new_unique_urls - previous_unique_urls
+        same_urls = new_unique_urls & previous_unique_urls
+    
     ingestion_collection.update_one(
         {
             'site': kwargs['website'],
@@ -100,4 +107,4 @@ def get_diff_urls(**kwargs):
     kwargs['ti'].xcom_push(key='new_urls', value=new_urls)
     kwargs['ti'].xcom_push(key='same_urls', value=same_urls)
 
-    return len(new_urls),len(delete_urls),len(same_urls)
+    return 'new,delete,same:', len(new_urls),len(delete_urls),len(same_urls)
