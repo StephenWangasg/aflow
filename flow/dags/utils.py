@@ -27,7 +27,7 @@ default_args = {
     'owner': 'iqnect',
     'depends_on_past': False,
     'start_date': base_start_date,
-    'email':['xuejie.zhang@iqnect.org'],
+    'email':['sisong@iqnect.org'],
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
