@@ -4,6 +4,7 @@ import socket, urllib, csv, gzip, os
 import requests
 import email, imaplib
 
+from ftplib import FTP
 
 def download_http_file(url, file_path):
     headers = {
@@ -115,3 +116,20 @@ def zalora_download(**kwargs):
             with gzip.open(download_file_path + '.gz', 'rb') as in_file, open(download_file_path, 'wb') as out_file:
                 out_file.write(in_file.read())
             return
+
+
+def swap_download(**kwargs):
+    download_file_path = kwargs['download_file']
+
+    ftp = FTP('datatransfer.cj.com')     # connect to host, default port
+    ftp.login('4616059', 'JZ$TYXPJ')
+    ftp.cwd('outgoing/productcatalog/187926') 
+    #ftp.retrlines('LIST')
+    print 'Downloading archive...'
+    ftp.retrbinary('RETR Swap_com-Swap_com_Product_Catalog.txt.gz', open(download_file_path + '.gz', 'wb').write)
+    ftp.quit()
+
+    # File has been downloaded, unzip it
+    print 'Extracting...'
+    with gzip.open(download_file_path + '.gz', 'rb') as in_file, open(download_file_path, 'wb') as out_file:
+        out_file.write(in_file.read())

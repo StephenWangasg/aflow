@@ -19,6 +19,20 @@ def zalora(row, map_, cats):
     return update_map_price(row, map_, 'PRICE', 'SALEPRICE')
 
 
+def swap(row, map_, cats):
+    if not b_any((row['KEYWORDS'] == x or row['KEYWORDS'].startswith(x)) for x in cats):
+        return
+    if valid(row['NAME'].lower()):
+        return
+    if row['KEYWORDS'].startswith('Women'):
+        row['gender'] = 'female'
+    elif row['KEYWORDS'].startswith('Men'):
+        row['gender'] = 'male'
+    else:
+        return
+    return update_map_price(row, map_, 'PRICE', 'SALEPRICE')
+
+
 def get_prices(price, price2):
     try:
         p1 = float(price)
