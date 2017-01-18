@@ -10,10 +10,10 @@ from flow.config import data_feed_path
 from flow.dags.utils import swap_args, get_sub_dag
 
 
-dag = DAG('swap_singapore', default_args=swap_args)
+dag = DAG('swap_us', default_args=swap_args)
 
 website = 'swap'
-country = 'singapore'
+country = 'us'
 p = data_feed_path + website + country
 
 op_kwargs = {
@@ -36,7 +36,7 @@ op_kwargs = {
 }
 
 t1 = PythonOperator(
-    task_id='download_swap_singapore',
+    task_id='download_swap_us',
     provide_context=True,
     python_callable=swap_download,
     op_kwargs=op_kwargs,
@@ -44,7 +44,7 @@ t1 = PythonOperator(
 
 
 t2 = PythonOperator(
-    task_id='parse_swap_singapore',
+    task_id='parse_swap_us',
     provide_context=True,
     python_callable=parse_write,
     op_kwargs=op_kwargs,

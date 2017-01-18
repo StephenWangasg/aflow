@@ -135,38 +135,4 @@ def parse_write(**kwargs):
 
 
 if __name__ == "__main__":
-    from flow.config import data_feed_path
-
-    website = 'swap'
-    country = 'singapore'
-    p = data_feed_path + website + country
-
-    op_kwargs = {
-        'download_file': p + '.txt',
-        'new_parsed_csv': p + 'current.csv',
-        'website': website,
-        'country': country,
-        "affiliate_name": "Swap.com Singapore",
-        'map': [
-            ('product_name', 'Name'),
-            ('currency', 'Currency'),
-            ('product_url', 'Url'),
-            ('image_url', 'Image'),
-            ('unique_url', 'Url')
-        ],
-        'cats': [
-            "Apparel & Accessories > Clothing > Outerwear > Coats & Jackets",
-            "Apparel & Accessories > Clothing > Shirts & Tops",
-            "Apparel & Accessories > Clothing > One-Pieces",
-            "Apparel & Accessories > Clothing > Skirts",
-            "Apparel & Accessories > Clothing > Shorts",
-            "Apparel & Accessories > Clothing > Pants",
-            "Apparel & Accessories > Clothing",
-            "Apparel & Accessories > Clothing > Uniforms",
-            "Apparel & Accessories > Clothing > Suits",
-            "Apparel & Accessories > Clothing > Outerwear",
-            "Apparel & Accessories > Clothing > Outerwear > Snow Pants & Suits",
-            "Apparel & Accessories > Clothing > One-Pieces > Jumpsuits & Rompers"
-        ]
-    }
-    parse_write(**op_kwargs)
+    print 'main'
