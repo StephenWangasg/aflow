@@ -77,4 +77,4 @@ if __name__ == '__main__':
     # Disable all warnings
     requests.packages.urllib3.disable_warnings()
 
-    flipkart_download(api_listing='https://affiliate-api.flipkart.net/affiliate/api/', affiliate_id='salesiqne', affiliate_token='5d2d66375e7c4e13b0affc5b431529af', data_feed_path=data_feed_path, website='flipkart', country='singapore', categories=cats)
+    flipkart_download(api_listing='https://affiliate-api.flipkart.net/affiliate/api/', affiliate_id='salesiqne', affiliate_token='5d2d66375e7c4e13b0affc5b431529af', data_feed_path=data_feed_path, website='flipkart', country='india', categories=cats)
