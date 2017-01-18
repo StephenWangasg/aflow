@@ -138,7 +138,7 @@ if __name__ == "__main__":
     data_feed_path = '/images/models/feeds/'
 
     website = 'swap'
-    country = 'singapore'
+    country = 'us'
     p = data_feed_path + website + country
 
     op_kwargs = {

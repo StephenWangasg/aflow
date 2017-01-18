@@ -14,7 +14,7 @@ cats = [
 ]
 
 
-def load_data_from_url(data_feed_url, affiliate_id, affiliate_token, csv_writer):
+def load_data_from_url(data_feed_url, affiliate_id, affiliate_token, csv_writer, page):
     data_feed = requests.get(data_feed_url, headers={
         'Fk-Affiliate-Id': affiliate_id,
         'Fk-Affiliate-Token': affiliate_token,
@@ -24,13 +24,24 @@ def load_data_from_url(data_feed_url, affiliate_id, affiliate_token, csv_writer)
     for prod in products:
         base_info = prod['productBaseInfoV1']
         prod_name = base_info['title']
-        prod_url =  base_info['productUrl']
-        img_url = base_info['imageUrls']['800x800']
+        prod_url = base_info['productUrl']
+        img_urls = base_info['imageUrls']              
+        if img_urls:
+            if '800x800' in img_urls:
+                img_url = img_urls['800x800']
+            else:
+                img_url = img_urls['400x400']
+        else:
+            continue
         uniq_url = img_url
-        price = base_info['flipkartSellingPrice']['amount']
-        currency = base_info['flipkartSellingPrice']['currency']
-
-        if 'flipkartSpecialPrice' in base_info and base_info['flipkartSpecialPrice'] is not None:
+        flipkart_price = base_info['flipkartSellingPrice']
+        if flipkart_price:
+            price = base_info['flipkartSellingPrice']['amount']
+            currency = base_info['flipkartSellingPrice']['currency']
+        else:
+            continue
+           
+        if 'flipkartSpecialPrice' in base_info and base_info['flipkartSpecialPrice']:
             disc_price = base_info['flipkartSpecialPrice']['amount']
         else:
             disc_price = 0
@@ -39,9 +50,10 @@ def load_data_from_url(data_feed_url, affiliate_id, affiliate_token, csv_writer)
 
     if 'nextUrl' in data:
         next_url = data['nextUrl']                   
-        print next_url
-        #load_data_from_url(next_url, affiliate_id, affiliate_token, output)
-    
+        print page + 1, ':',  next_url
+        load_data_from_url(next_url, affiliate_id, affiliate_token, csv_writer, page + 1)
+    else:
+        print 'Ended', page     
 
 
 def flipkart_download(**kwargs):
@@ -56,7 +68,7 @@ def flipkart_download(**kwargs):
     r = requests.get(api_listing_url)
     j = r.json()
     api_listings = j['apiGroups']['affiliate']['apiListings']
-    with open(data_feed_path + '/flipkartsingaporecurrent.csv', 'wb') as output:
+    with open(data_feed_path + website + country + 'current.csv', 'wb') as output:
         csv_writer = csv.writer(output, delimiter='\t', quotechar="\"")
         csv_writer.writerow(keys)
         for c in api_listings:
@@ -65,7 +77,7 @@ def flipkart_download(**kwargs):
                 for v in var:
                     if v.startswith('v1'):
                         data_feed_url = var[v]['get'] + '&inStock=true'
-                        load_data_from_url(data_feed_url, affiliate_id, affiliate_token, csv_writer)
+                        load_data_from_url(data_feed_url, affiliate_id, affiliate_token, csv_writer, 1)
                     # Save to file
                     #with open(data_feed_path + website + country + c + '.json', 'w') as f:
                     #    json.dump(data, f)
