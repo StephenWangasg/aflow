@@ -6,8 +6,8 @@ db = mongo_client['fashion']
 collection = db['products']
 db_collection = db['db_status']
 
-SITES = ['lazada', 'asos', 'farfetch', 'yoox', 'zalora']
-LOCATIONS = ['global', 'singapore', 'indonesia', 'malaysia']
+SITES = ['lazada', 'asos', 'farfetch', 'yoox', 'zalora', 'swap', 'flipkart']
+LOCATIONS = ['global', 'singapore', 'indonesia', 'malaysia', 'india']
 STATUSES = [True, False, 'download_error_url','download_error_url_404','download_error_url_timeout','server_error']
 
 
