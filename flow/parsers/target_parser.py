@@ -92,6 +92,6 @@ if __name__ == "__main__":
         ],
     }
 
-    cats = import_cats('target_cats')
+    cats = import_cats(data_feed_path + 'target_cats')
     op_kwargs['cats'] = cats
     parse_write(**op_kwargs)

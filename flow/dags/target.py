@@ -28,7 +28,7 @@ op_kwargs = {
         ('unique_url', 'Image URL')
     ],
 }
-cats = import_cats('target_cats')
+cats = import_cats(data_feed_path + 'target_cats')
 op_kwargs['cats'] = cats
 
 t1 = PythonOperator(
