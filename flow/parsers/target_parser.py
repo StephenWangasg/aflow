@@ -54,11 +54,11 @@ def target_parse(row, map_, cats):
 
 
 def parse_write(**kwargs):
-    inputfile = op_kwargs['download_file']
-    outputfile = op_kwargs['new_parsed_csv']
-    map = op_kwargs['map']
-    cats = op_kwargs['cats']
-    website = op_kwargs['website']
+    inputfile = kwargs['download_file']
+    outputfile = kwargs['new_parsed_csv']
+    map = kwargs['map']
+    cats = kwargs['cats']
+    website = kwargs['website']
     with open(inputfile, 'rb') as infile, open(outputfile, 'wb') as output_file:
         reader = csv.DictReader(infile, delimiter='\t', quotechar="\"")
         writer = csv.writer(output_file, delimiter='\t', quotechar="\"")
