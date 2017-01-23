@@ -117,6 +117,7 @@ def farfetch(row, map_, cats):
         return
     return update_map_price(row, map_, 'retail_price', 'sale_price')
 
+
 def parse_write(**kwargs):
     inputfile = kwargs['download_file']
     outputfile = kwargs['new_parsed_csv']
@@ -135,4 +136,4 @@ def parse_write(**kwargs):
 
 
 if __name__ == "__main__":
-    print 'main'
+    print "main"

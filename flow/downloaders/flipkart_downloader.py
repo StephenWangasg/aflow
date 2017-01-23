@@ -29,8 +29,10 @@ def load_data_from_url(data_feed_url, affiliate_id, affiliate_token, csv_writer,
         if img_urls:
             if '800x800' in img_urls:
                 img_url = img_urls['800x800']
-            else:
+            elif '400x400' in img_urls:
                 img_url = img_urls['400x400']
+            else:
+                continue
         else:
             continue
         uniq_url = img_url

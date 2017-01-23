@@ -21,9 +21,10 @@ yoox_start_date = base_start_date + timedelta(minutes = 40)
 zalora_start_date = base_start_date + timedelta(hours = 1)
 swap_start_date = base_start_date + timedelta(minutes = 80)
 flipkart_start_date = base_start_date + timedelta(minutes = 100)
-updatedb_start_date = base_start_date + timedelta(hours = 2)
-gmv_start_date = base_start_date + timedelta(minutes = 150)
-db_status_start_date = base_start_date + timedelta(minutes = 150)
+target_start_date = base_start_date + timedelta(hours = 2)
+updatedb_start_date = base_start_date + timedelta(hours = 3)
+gmv_start_date = base_start_date + timedelta(minutes = 200)
+db_status_start_date = base_start_date + timedelta(minutes = 200)
 
 default_args = {
     'owner': 'iqnect',
@@ -44,6 +45,7 @@ yoox_args = copy.deepcopy(default_args)
 zalora_args = copy.deepcopy(default_args)
 swap_args = copy.deepcopy(default_args)
 flipkart_args = copy.deepcopy(default_args)
+target_args = copy.deepcopy(default_args)
 updatedb_args = copy.deepcopy(default_args)
 gmv_args = copy.deepcopy(default_args)
 db_status_args = copy.deepcopy(default_args)
@@ -56,6 +58,7 @@ yoox_args['start_date'] = yoox_start_date
 zalora_args['start_date'] = zalora_start_date
 swap_args['start_date'] = swap_start_date
 flipkart_args['start_date'] = flipkart_start_date
+target_args['start_date'] = target_start_date
 updatedb_args['start_date'] = updatedb_start_date
 gmv_args['start_date'] = gmv_start_date
 db_status_args['start_date'] = db_status_start_date

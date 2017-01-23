@@ -117,6 +117,18 @@ def farfetch(row, map_, cats):
         return
     return update_map_price(row, map_, 'retail_price', 'sale_price')
 
+
+def target(row, map_, cats):
+    print row
+    if not b_any((row['Category'] == x or row['Category'].startswith(x)) for x in cats):
+        return
+    if valid(row['Product Name'].lower()):
+        return
+    row['gender'] = -1
+    row['currency'] = 'USD'
+    return update_map_price(row, map_, 'Original Price', 'Current Price')
+
+
 def parse_write(**kwargs):
     inputfile = kwargs['download_file']
     outputfile = kwargs['new_parsed_csv']
@@ -137,46 +149,25 @@ def parse_write(**kwargs):
 if __name__ == "__main__":
     data_feed_path = '/images/models/feeds/'
 
-    website = 'swap'
-    country = 'us'
+    website = 'target'
+    country = 'global'
     p = data_feed_path + website + country
 
-    op_kwargs = {
-    'download_file': p + '.txt',
-    'new_parsed_csv': p + 'current.csv',
-    'website': website,
-    'country': country,
-    "search_word": "Swap_com-Swap_com_Product_Catalog.txt.g",
-    'map': [
-        ('product_name', 'NAME'),
-        ('currency', 'CURRENCY'),
-        ('product_url', 'BUYURL'),
-        ('image_url', 'IMAGEURL'),
-        ('unique_url', 'IMAGEURL')
-      ],
-    'cats': [
-        "Men's Apparel > Men's Fashion",
-        "Women's Apparel > Women's Fashion",
-      ]
-}
-
-    #parse_write(**op_kwargs)
-    #exit(0)
-
-    existing_cats = []
-    inputfile = op_kwargs['download_file']
-    outputfile = op_kwargs['new_parsed_csv']
-    map = op_kwargs['map']
-    cats = op_kwargs['cats']
-    website = op_kwargs['website']
-    with open(inputfile, 'rb') as infile, open(outputfile, 'wb') as output_file:
-        reader = csv.DictReader(infile)
-        writer = csv.writer(output_file, delimiter='\t', quotechar="\"")
-        writer.writerow(keys)
-        for row in reader:
-            cat = row['ADVERTISERCATEGORY']
-            #if cat not in existing_cats and (cat.startswith('Men') or cat.startswith('Women')):
-            if cat not in existing_cats:          
-                existing_cats.append(cat)
-    print sorted(existing_cats)
+    op_args = {
+        'download_file': p + '.txt',
+        'new_parsed_csv': p + 'current.csv',
+        'website': website,
+        'country': country,
+        'map': [
+            ('product_name', 'Product Name'),
+            #('currency', 'Currency'),
+            ('product_url', 'Product URL'),
+            ('image_url', 'Image URL'),
+            ('unique_url', 'Image URL')
+        ],
+    }
+    with open('target_cats', 'rb') as f:
+        cats = f.read().splitlines()
+    op_args['cats'] = cats
+    parse_write(**op_args)
 

@@ -133,9 +133,3 @@ def swap_download(**kwargs):
     print 'Extracting...'
     with gzip.open(download_file_path + '.gz', 'rb') as in_file, open(download_file_path, 'wb') as out_file:
         out_file.write(in_file.read())
-
-
-def flipkart_download(**kwargs):
-    download_file_path = kwargs['download_file']
-    trakcing_id = 'salesiqne'
-    token = '976fda3ff18c4e1a806e5bb416704810'
