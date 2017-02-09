@@ -37,14 +37,12 @@ t1 = PythonOperator(
     dag=dag)
 
 t2 = PythonOperator(
-    task_id='parse_lazada',
+    task_id='parse_lazada_singapore',
     provide_context=True,
     python_callable=parse_write,
     op_kwargs=op_kwargs,
     dag=dag)
 
-t3, t4, t5, t6, t7, t8, t9 = get_sub_dag(op_kwargs, dag)
-t1 >> t2 >> t4 >> t5 >> t7 >> t9
-t3 >> t5
-t5 >> t6
-t5 >> t8
+t3 = get_sub_dag(op_kwargs, dag)
+
+t1 >> t2 >> t3

@@ -5,11 +5,11 @@ from  __builtin__ import any as b_any
 
 valid = lambda st: any(ext in st for ext in invalid_words)
 
-def import_cats(filename):
-    with open(filename, 'rb') as f:
-        cats = f.read().splitlines()
-        return cats
-    return None 
+# def import_cats(filename):
+#     with open(filename, 'rb') as f:
+#         cats = f.read().splitlines()
+#         return cats
+#     return None 
 
 
 def get_prices(price, price2):

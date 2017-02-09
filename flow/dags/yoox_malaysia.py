@@ -27,7 +27,7 @@ op_kwargs = {
         ('product_url', 'Url'),
         ('image_url', 'Image'),
         ('unique_url', 'Url')
-      ],
+    ],
     'cats': [
         "Apparel & Accessories > Clothing > Outerwear > Coats & Jackets",
         "Apparel & Accessories > Clothing > Shirts & Tops",
@@ -41,7 +41,7 @@ op_kwargs = {
         "Apparel & Accessories > Clothing > Outerwear",
         "Apparel & Accessories > Clothing > Outerwear > Snow Pants & Suits",
         "Apparel & Accessories > Clothing > One-Pieces > Jumpsuits & Rompers"
-      ]
+    ]
 }
 
 t1 = PythonOperator(
@@ -52,14 +52,12 @@ t1 = PythonOperator(
     dag=dag)
 
 t2 = PythonOperator(
-    task_id='parse_yoox',
+    task_id='parse_yoox_malaysia',
     provide_context=True,
     python_callable=parse_write,
     op_kwargs=op_kwargs,
     dag=dag)
 
-t3, t4, t5, t6, t7, t8, t9 = get_sub_dag(op_kwargs, dag)
-t1 >> t2 >> t4 >> t5 >> t7 >> t9
-t3 >> t5
-t5 >> t6
-t5 >> t8
+t3 = get_sub_dag(op_kwargs, dag)
+
+t1 >> t2 >> t3

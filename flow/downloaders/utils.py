@@ -14,12 +14,10 @@ def download_http_file(url, file_path):
     target = urlparse(url)
     method = 'GET'
     body = ''
-    h = http.Http()
-    response, content = h.request(target.geturl(), method, body, headers)
-    data_feed_file = open(file_path, "w")
-    data_feed_file.write(content)
-    data_feed_file.close()
-    return
+    hclient = http.Http()
+    _, content = hclient.request(target.geturl(), method, body, headers)
+    with open(file_path, 'wb') as data_feed_file:
+        data_feed_file.write(content)
 
 
 def raukuten_download(**kwargs):

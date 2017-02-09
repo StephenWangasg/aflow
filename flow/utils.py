@@ -1,5 +1,5 @@
 import hashlib, urllib2
-import requests, ast
+import requests, ast, os
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 
@@ -11,8 +11,8 @@ def get_hashed_st(st):
 
 def download_image_from_url(url, image_path):
     img_data = urllib2.urlopen(url, timeout=30).read()
-    with open(image_path, 'wb') as f:
-        f.write(img_data)
+    with open(image_path, 'wb') as image_file:
+        image_file.write(img_data)
 
 
 def download_image(url_path):

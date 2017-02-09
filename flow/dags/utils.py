@@ -1,7 +1,7 @@
 import sys
 from paths import flow_folder
 sys.path.insert(0, flow_folder)
-from flow.pipeline import get_diff_urls, delete_old_urls, insert_new_urls, download_images, get_unique_urls_from_db, get_unique_urls_from_csv, update_existing_urls
+from flow.pipeline import update_insert_delete_urls
 from datetime import datetime, timedelta
 from airflow.operators.python_operator import PythonOperator
 import copy
@@ -11,7 +11,7 @@ date_now = datetime.now()-timedelta(days=2)
 base_start_date = date_now.replace(hour=15,minute=0,second=0)
 
 # manually set the start date
-#base_start_date = datetime(2016,12,5,15,0,0) # 15pm UTC, which is 23pm in singapore
+# base_start_date = datetime(2017,1,1,0,0,0)
 
 currency_start_date = base_start_date
 asos_start_date = base_start_date + timedelta(minutes = 1)
@@ -64,54 +64,13 @@ gmv_args['start_date'] = gmv_start_date
 db_status_args['start_date'] = db_status_start_date
 
 def get_sub_dag(op_kwargs, dag):
-
-    t3 = PythonOperator(
-        task_id='get_unique_urls_from_db',
+    '''
+    The common sub dag for all feeds
+    '''
+    return PythonOperator(
+        task_id='update_insert_delete_urls',
         provide_context=True,
-        python_callable=get_unique_urls_from_db,
+        python_callable=update_insert_delete_urls,
         op_kwargs=op_kwargs,
         dag=dag)
 
-    t4 = PythonOperator(
-        task_id='get_unique_urls_from_csv',
-        provide_context=True,
-        python_callable=get_unique_urls_from_csv,
-        op_kwargs=op_kwargs,
-        dag=dag)
-
-    t5 = PythonOperator(
-        task_id='get_diff_urls',
-        provide_context=True,
-        python_callable=get_diff_urls,
-        op_kwargs=op_kwargs,
-        dag=dag)
-
-    t6 = PythonOperator(
-        task_id='delete_old_urls',
-        provide_context=True,
-        python_callable=delete_old_urls,
-        op_kwargs=op_kwargs,
-        dag=dag)
-
-    t7 = PythonOperator(
-        task_id='insert_new_urls',
-        provide_context=True,
-        python_callable=insert_new_urls,
-        op_kwargs=op_kwargs,
-        dag=dag)
-
-    t8 = PythonOperator(
-        task_id='update_existing_urls',
-        provide_context=True,
-        python_callable=update_existing_urls,
-        op_kwargs=op_kwargs,
-        dag=dag)
-
-    t9 = PythonOperator(
-        task_id='download_images',
-        provide_context=True,
-        python_callable=download_images,
-        op_kwargs=op_kwargs,
-        dag=dag)
-
-    return t3, t4, t5, t6, t7, t8, t9
