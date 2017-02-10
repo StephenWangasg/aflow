@@ -1,7 +1,7 @@
 from datetime import datetime
 from pymongo import MongoClient
 
-websites = ['lazada', 'asos', 'farfetch', 'yoox', 'zalora', 'swap', 'flipkart', 'target']
+websites = ['lazada', 'asos', 'farfetch', 'yoox', 'zalora', 'swap', 'flipkart', 'target', 'luisaviaroma']
 countries = ['singapore', 'global', 'indonesia', 'malaysia', 'india']
 
 mongo_client = MongoClient()
