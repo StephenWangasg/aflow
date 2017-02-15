@@ -55,13 +55,11 @@ def raukuten_download(**kwargs):
         os.remove(tmp_file_path)
     if os.path.exists(tmp_file_path2):
         os.remove(tmp_file_path2)
-    return url
 
 def lazada_download(**kwargs):
     download_file_path = kwargs['download_file']
     feed_url = kwargs['feed_url']
     download_http_file(feed_url, download_file_path)
-    return feed_url
 
 def yoox_download(**kwargs):
     download_file_path = kwargs['download_file']
@@ -83,12 +81,6 @@ def yoox_download(**kwargs):
                 download_http_file(feed_url, download_file_path)
 		downloaded = True
                 break
-
-    if downloaded:
-	return feed_list_url
-    else:
-	return 'download failed'
-
 
 def zalora_download(**kwargs):
     download_file_path = kwargs['download_file']

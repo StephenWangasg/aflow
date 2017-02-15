@@ -26,7 +26,6 @@ def cache_currency(**kwargs):
     currency_cache = redis.StrictRedis(host=query_server['host'], port=6379, db=0)
     conversions = get_current_rates()
     currency_cache.set('currencies', str(conversions))
-    print conversions
 
 dag = DAG('price_conversion', default_args=currency_args)
 
