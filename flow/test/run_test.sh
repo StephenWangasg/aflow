@@ -11,7 +11,7 @@ pushd `dirname $0` > /dev/null
 
 test_path=`pwd -P`
 flow_path=`dirname $test_path`
-temp_path=$flow_path/test/temp
+temp_path=$flow_path/test/.temp
 
 rm -rf $temp_path
 

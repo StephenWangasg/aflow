@@ -3,7 +3,7 @@ to a log file and stdout. It rotates the log file when it reached a configurable
 size limit. A FlowLoggerWatcher class is provided to watch the system disk space
 and deletes log files whenever necessary'''
 
-import logging, logging.handlers
+import logging.handlers
 import os
 import sys
 
@@ -13,15 +13,15 @@ class FlowLogger:
 
     def __init__(self, site, country, log_file_path,
                  log_level_file='info', log_level_stdout='debug',
-                 log_file_size_in_bytes=0x3200000):
+                 log_file_size_in_bytes=0x3200000, log_file_count=10):
         self.log_file_path = log_file_path
         self.log_level_file = log_level_file
         self.log_level_stdout = log_level_stdout
         self.log_file_size_in_bytes = log_file_size_in_bytes
-        print self.log_level_file, self.log_level_stdout, self.log_file_size_in_bytes
+        self.log_file_count = log_file_count
         self.__logger = site + '.' + country
         self.__logger_format = \
-            '[%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d]:\n\t - %(message)s'
+            '[%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d]: - %(message)s'
         self.__setup()
 
     def __setup(self):
@@ -35,14 +35,16 @@ class FlowLogger:
         self.log_level_s = flow_logger_levels[self.log_level_stdout]
         self.formatter = logging.Formatter(self.__logger_format)
         self.logger = logging.getLogger(self.__logger)
-        self.logger.setLevel(logging.NOTSET)
+        self.logger.propagate = False
+        self.logger.setLevel(logging.DEBUG)
         self.__setup_file_logger()
         self.__setup_stdout_logger()
 
     def __setup_file_logger(self):
         file_handler = logging.handlers.RotatingFileHandler(
             os.path.join(self.log_file_path, self.__logger + ".log"),
-            maxBytes=self.log_file_size_in_bytes)
+            maxBytes=self.log_file_size_in_bytes,
+            backupCount=self.log_file_count)
         file_handler.setLevel(self.log_level_f)
         file_handler.setFormatter(self.formatter)
         self.logger.addHandler(file_handler)
@@ -83,7 +85,7 @@ class FlowDiskWatcher:
 class FlowLoggerWatcher:
     'Disk watcher class, runs to delete log files if necessary'
 
-    def __init__(self, log_file_path, percentage_limit = 0.75):
+    def __init__(self, log_file_path, percentage_limit=0.75):
         self.log_file_path = log_file_path
         self.percentage_limit = percentage_limit
 
@@ -93,13 +95,16 @@ class FlowLoggerWatcher:
             next_file = self.__nextfile()
             if next_file:
                 os.remove(next_file)
+            else:
+                break
 
     def __disize(self):
         '''If the disk usage exceeds a limit, start to delete
         old log files from the disk'''
         total = FlowDiskWatcher.total(self.log_file_path)
         used = FlowDiskWatcher.used(self.log_file_path)
-        if used / total > self.percentage_limit:
+        percentage = float(used) / total
+        if percentage > self.percentage_limit:
             return True
         return False
 
