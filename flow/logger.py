@@ -3,16 +3,22 @@ to a log file and stdout. It rotates the log file when it reached a configurable
 size limit. A FlowLoggerWatcher class is provided to watch the system disk space
 and deletes log files whenever necessary'''
 
-import logging
+import logging, logging.handlers
 import os
 import sys
-from flow.config import log_file_path, log_level_file, log_level_stdout, log_file_size_in_bytes
 
 
 class FlowLogger:
     '''A universal logger class, logs to file and stdout'''
 
-    def __init__(self, site, country):
+    def __init__(self, site, country, log_file_path,
+                 log_level_file='info', log_level_stdout='debug',
+                 log_file_size_in_bytes=0x3200000):
+        self.log_file_path = log_file_path
+        self.log_level_file = log_level_file
+        self.log_level_stdout = log_level_stdout
+        self.log_file_size_in_bytes = log_file_size_in_bytes
+        print self.log_level_file, self.log_level_stdout, self.log_file_size_in_bytes
         self.__logger = site + '.' + country
         self.__logger_format = \
             '[%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d]:\n\t - %(message)s'
@@ -25,8 +31,8 @@ class FlowLogger:
                               'warning': logging.WARNING,
                               'error': logging.ERROR,
                               'critical': logging.CRITICAL}
-        self.log_level_f = flow_logger_levels[log_level_file]
-        self.log_level_s = flow_logger_levels[log_level_stdout]
+        self.log_level_f = flow_logger_levels[self.log_level_file]
+        self.log_level_s = flow_logger_levels[self.log_level_stdout]
         self.formatter = logging.Formatter(self.__logger_format)
         self.logger = logging.getLogger(self.__logger)
         self.logger.setLevel(logging.NOTSET)
@@ -34,8 +40,9 @@ class FlowLogger:
         self.__setup_stdout_logger()
 
     def __setup_file_logger(self):
-        file_handler = logging.handlers.RotatingFileHandler(self.__logger + ".log",
-                                                            maxBytes=log_file_size_in_bytes)
+        file_handler = logging.handlers.RotatingFileHandler(
+            os.path.join(self.log_file_path, self.__logger + ".log"),
+            maxBytes=self.log_file_size_in_bytes)
         file_handler.setLevel(self.log_level_f)
         file_handler.setFormatter(self.formatter)
         self.logger.addHandler(file_handler)
@@ -50,8 +57,35 @@ class FlowLogger:
         'route log requests to logger object'
         return getattr(self.logger, attrname)
 
+
+class FlowDiskWatcher:
+    'Utility class watch disk usage'
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def free(watch_dir):
+        stats = os.statvfs(watch_dir)
+        return stats.f_bavail * stats.f_frsize
+
+    @staticmethod
+    def used(watch_dir):
+        stats = os.statvfs(watch_dir)
+        return (stats.f_blocks - stats.f_bfree) * stats.f_frsize
+
+    @staticmethod
+    def total(watch_dir):
+        stats = os.statvfs(watch_dir)
+        return stats.f_blocks * stats.f_frsize
+
+
 class FlowLoggerWatcher:
     'Disk watcher class, runs to delete log files if necessary'
+
+    def __init__(self, log_file_path, percentage_limit = 0.75):
+        self.log_file_path = log_file_path
+        self.percentage_limit = percentage_limit
 
     def __call__(self):
         'One pass check disk status, and delete old log files if necessary'
@@ -61,12 +95,11 @@ class FlowLoggerWatcher:
                 os.remove(next_file)
 
     def __disize(self):
-        '''If the disk usage exceeds a limit (75%), start to delete
+        '''If the disk usage exceeds a limit, start to delete
         old log files from the disk'''
-        stats = os.statvfs(log_file_path)
-        total = stats.f_blocks * stats.f_frsize
-        used = (stats.f_blocks - stats.f_bfree) * stats.f_frsize
-        if used / total > 0.75:
+        total = FlowDiskWatcher.total(self.log_file_path)
+        used = FlowDiskWatcher.used(self.log_file_path)
+        if used / total > self.percentage_limit:
             return True
         return False
 
@@ -74,7 +107,7 @@ class FlowLoggerWatcher:
         'Get the oldest file in log file directory or None if empty'
         try:
             return min((os.path.join(dirname, filename)
-                        for dirname, _, filenames in os.walk(log_file_path)
+                        for dirname, _, filenames in os.walk(self.log_file_path)
                         for filename in filenames), key=lambda fn: os.stat(fn).st_mtime)
         except:
             return None

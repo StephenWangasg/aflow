@@ -1,4 +1,5 @@
 *.pyc
 *.*~
 .idea/
+flow/test/temp
 webapp/webapp_uwsgi.ini
