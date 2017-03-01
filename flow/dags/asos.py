@@ -40,6 +40,9 @@ op_kwargs = {
         ]
 }
 
+
+python_callable = lamda **kwargs: DownloadDirector.construct(HttpDownloader(**kwargs))
+
 t1 = PythonOperator(
     task_id='download_asos',
     provide_context=True,

@@ -11,12 +11,13 @@ pushd `dirname $0` > /dev/null
 
 test_path=`pwd -P`
 flow_path=`dirname $test_path`
+root_path=`dirname $flow_path`
 temp_path=$flow_path/test/.temp
 
 rm -rf $temp_path
 
 #add flow path to PYTHONPATH
-export PYTHONPATH=$PYTHONPATH:$flow_path
+export PYTHONPATH=$PYTHONPATH:$root_path
 
 python -m pytest --basetemp=$temp_path $test_path
 

@@ -1,4 +1,5 @@
 'test logger and watcher class'
+
 import os
 import fractions
 import logger
@@ -24,7 +25,7 @@ def test_logger(tmpdisk_stat):
         'test-site', 'singapore', tmpdisk_stat['directory'], 'debug', 'debug', 1024, 500)
     for i in range(1000):
         logg.debug(
-            '------------Logger Test [%d]------------------------', i)
+            '------------Logger Test [%d]-------------', i)
         logg.info('Logger directory: %s', tmpdisk_stat['directory'])
         used_size = tmpdisk_stat['used'] / 1024 / 1024
         used_unit = "MB" if used_size < 1024 else "GB"
