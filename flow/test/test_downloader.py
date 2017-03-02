@@ -26,8 +26,8 @@ def test_raukuten_downloader(download_stat):
               'logger':
               FlowLogger('asos', 'global', download_stat['directory'], 'debug', 'critical'), }
 
-    downloader = RaukutenDownloader(**kwargs)
-
-    ret = DownloaderDirector.construct(downloader)
-
-    assert ret
+    try:
+        downloader = RaukutenDownloader(kwargs)
+        DownloaderDirector.construct(downloader)
+    except:
+        assert 0

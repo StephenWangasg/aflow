@@ -2,6 +2,14 @@ from pymongo import MongoClient
 import redis
 import os
 
+CONFIGS = {
+    'log_path': '/images/models/logs/',
+}
+
+DOWNLOAD_CONFIGS = {
+    'download_path': '/images/models/feeds/',
+
+}
 model_path = '/images/models/'
 data_feed_path = '/images/models/feeds/'
 feed_images_path = '/images/models/feed_images/'
