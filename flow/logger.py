@@ -3,10 +3,9 @@ to a log file and stdout. It rotates the log file when it reached a configurable
 size limit. A FlowLoggerWatcher class is provided to watch the system disk space
 and deletes log files whenever necessary'''
 
-import logging.handlers
 import os
 import sys
-
+import logging.handlers
 
 class FlowLogger:
     '''A universal logger class, logs to file and stdout'''

@@ -1,4 +1,11 @@
 #!/bin/bash
+
+#***********************************************************
+#| HAVE PATIENCE WITH THIS MINUTES LONG TEST! FOR LAO TZU, |
+#| IT WAS ONE OF THE THREE GREATEST TREASURES TO HAVE,     |
+#| ALONG WITH COMPASSION AND SIMPLICITY.                   |
+#***********************************************************
+
 #simply run run_test.sh to run all tests
 #Test framework: pytest
 #To install:
