@@ -2,16 +2,16 @@
 
 import os
 import fractions
-import flow.logger
+import flow.utilities.logger as logger
 import pytest
 
 @pytest.fixture(scope='module')
 def tmpdisk_stat(tmpdir_factory):
     'pytest fixture function'
     directory = str(tmpdir_factory.mktemp('logs', False))
-    used = flow.logger.FlowDiskWatcher.used(directory)
-    free = flow.logger.FlowDiskWatcher.free(directory)
-    total = flow.logger.FlowDiskWatcher.total(directory)
+    used = logger.FlowDiskWatcher.used(directory)
+    free = logger.FlowDiskWatcher.free(directory)
+    total = logger.FlowDiskWatcher.total(directory)
     return {'directory': directory,
             'used': used,
             'free': free,
@@ -21,7 +21,7 @@ def tmpdisk_stat(tmpdir_factory):
 
 def test_logger(tmpdisk_stat):
     'test logger, generate ~500 log files, each 1024 bytes'
-    logg = flow.logger.FlowLogger(
+    logg = logger.FlowLogger(
         'test-site', 'singapore', tmpdisk_stat['directory'], 'debug', 'debug', 1024, 500)
     for i in range(1000):
         logg.debug(
@@ -46,14 +46,14 @@ def test_watcher(tmpdisk_stat):
     original = len([name for name in os.listdir(tmpdisk_stat['directory']) if os.path.isfile(
         os.path.join(tmpdisk_stat['directory'], name))])
     assert original == 501 or original == 500
-    watcher = flow.logger.FlowLoggerWatcher(
+    watcher = logger.FlowLoggerWatcher(
         tmpdisk_stat['directory'], float(tmpdisk_stat['used'] + 1024 * 300) / tmpdisk_stat['total'])
     watcher()
     len1 = len([name for name in os.listdir(tmpdisk_stat['directory']) if os.path.isfile(
         os.path.join(tmpdisk_stat['directory'], name))])
     assert len1 < original
     if len1:
-        watcher = flow.logger.FlowLoggerWatcher(
+        watcher = logger.FlowLoggerWatcher(
             tmpdisk_stat['directory'], float(tmpdisk_stat['percentage']))
         watcher()
         len2 = len([name for name in os.listdir(tmpdisk_stat['directory']) if os.path.isfile(

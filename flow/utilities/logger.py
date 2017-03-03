@@ -11,7 +11,7 @@ class FlowLogger:
     '''A universal logger class, logs to file and stdout'''
 
     def __init__(self, site, country, log_file_path,
-                 log_level_file='info', log_level_stdout='debug',
+                 log_level_file='debug', log_level_stdout='info',
                  log_file_size_in_bytes=0x3200000, log_file_count=10):
         self.log_file_path = log_file_path
         self.log_level_file = log_level_file

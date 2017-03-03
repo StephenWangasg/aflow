@@ -1,13 +1,17 @@
 
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
+from flow.utilities.logger import FlowLogger
 
 class IDownloader:
     'downloader abstract base class'
     __metaclass__ = ABCMeta
 
-    def __init__(self):
-        pass
+    def __init__(self, kwargs):
+        self.kwargs = kwargs
+        self.kwargs['logger'] = (FlowLogger(kwargs['site'], kwargs['country'], kwargs['log_path'])
+                                 if 'logger' not in kwargs
+                                 else kwargs['logger'])
 
     @abstractmethod
     def download(self):
@@ -20,15 +24,11 @@ class IDownloader:
         remove duplicates, for example'''
         pass
 
-    @staticmethod
-    def join_filename(dir_path, site, country, ext='.txt'):
-        'A simple help function to generate file name'
-        return dir_path + "/" + site + country + ext
-
 
 class ZeroDownloadExcept(Exception):
     'Raised exception when zero valid product is detected'
     pass
+
 
 class DownloaderDirector:
     'Download director'

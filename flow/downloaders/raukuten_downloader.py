@@ -1,13 +1,13 @@
 
 import csv
 import gzip
+import os
 import socket
 import sys
 import urllib
-import downloader
+from flow.downloaders.downloader import IDownloader, ZeroDownloadExcept
+from flow.utilities.logger import FlowLogger
 
-IDownloader = downloader.IDownloader
-ZeroDownloadExcept = downloader.ZeroDownloadExcept
 
 class RaukutenDownloader(IDownloader):
     'Raukuten downloader'
@@ -15,12 +15,10 @@ class RaukutenDownloader(IDownloader):
     def __init__(self, kwargs):
         IDownloader.__init__(self)
         self.kwargs = kwargs
-        self.kwargs['download_file'] = IDownloader.join_filename(
-            kwargs['download_path'], kwargs['site'], kwargs['country'],
-            ".txt" if "ext" not in kwargs else kwargs["ext"])
-        self.kwargs['download_file_gz'] = IDownloader.join_filename(
+        self.kwargs['download_file_gz'] = os.path.join(
             kwargs['download_path'],
-            kwargs['site'], kwargs['country'], '.gz')
+            kwargs['site'] + '.' + kwargs['country'] + '.gz')
+
 
     def download(self):
         try:

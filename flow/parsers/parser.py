@@ -41,9 +41,9 @@ class IRowFilter:
         pass
 
     @abstractmethod
-    def filter(self, row, kwargs):
-        '''filters a row from downloaded file,
-        return a 2 element tuple: (bool_result, dict_amended_row)
+    def filter(self, row):
+        '''filters(validates) a row from downloaded file,
+        return a paired tuple: (bool_result, dict_amended_row)
         bool_result indicates if the row contains valid data
         dict_amended_row: row might be amended by filter'''
         pass
@@ -72,8 +72,7 @@ class Parser:
                 writer.writerow(KEYS)
                 for row in reader:
                     total_entries += 1
-                    result, row = self.kwargs['row_filter'].filter(
-                        row, self.kwargs)
+                    result, row = self.kwargs['row_filter'].filter(row)
                     if result:
                         writer.writerow([row[key] for key in KEYS])
                     else:
