@@ -1,28 +1,25 @@
+'''Donwloader base interface: IDownloader
+and DownloaderDirector class'''
 
-from abc import ABCMeta, abstractmethod
 from datetime import datetime
-from flow.utilities.logger import FlowLogger
+from flow.utilities.base import CBase
 
-class IDownloader:
-    'downloader abstract base class'
-    __metaclass__ = ABCMeta
+class IDownloader(CBase):
+    'downloader base class'
 
     def __init__(self, kwargs):
+        CBase.__init__(self)
         self.kwargs = kwargs
-        self.kwargs['logger'] = (FlowLogger(kwargs['site'], kwargs['country'], kwargs['log_path'])
-                                 if 'logger' not in kwargs
-                                 else kwargs['logger'])
+        self.ensure_logger(kwargs)
 
-    @abstractmethod
     def download(self):
         'download feed'
-        pass
+        raise NotImplementedError('subclass must override download()!')
 
-    @abstractmethod
     def transform(self):
         '''preliminarily filtering downloaded file,
         remove duplicates, for example'''
-        pass
+        raise NotImplementedError('subclass must override transform()!')
 
 
 class ZeroDownloadExcept(Exception):

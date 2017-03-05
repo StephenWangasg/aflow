@@ -1,8 +1,8 @@
 
 import sys
 import csv
-from abc import ABCMeta, abstractmethod
 from datetime import datetime
+from flow.utilities.base import CBase
 
 KEYS = ['product_name', 'price', 'disc_price', 'display_price',
         'currency', 'product_url', 'image_url', 'unique_url']
@@ -33,27 +33,26 @@ INVALID_KEYWORDS = [
 INVALID_KEYWORDS = [keyword.lower() for keyword in INVALID_KEYWORDS]
 
 
-class IRowFilter:
+class IRowFilter(CBase):
     'row filter base class'
-    __metaclass__ = ABCMeta
 
-    def __init__(self):
-        pass
+    def __init__(self, kwargs):
+        CBase.__init__(self)
+        self.kwargs = kwargs
+        self.ensure_logger(kwargs)
 
-    @abstractmethod
     def filter(self, row):
         '''filters(validates) a row from downloaded file,
-        return a paired tuple: (bool_result, dict_amended_row)
-        bool_result indicates if the row contains valid data
-        dict_amended_row: row might be amended by filter'''
-        pass
+        return True if the row contains valid data, False othereise'''
+        raise NotImplementedError('subclass must override filter()!')
 
 
 class Parser:
     'Parser class exposes the parse function'
 
-    def __init__(self, kwargs):
-        self.kwargs = kwargs
+    def __init__(self, rowfilter):
+        self.filter = rowfilter
+        self.kwargs = self.filter.kwargs
 
     def parse(self):
         '''parse the content of downloaded file,
@@ -72,7 +71,7 @@ class Parser:
                 writer.writerow(KEYS)
                 for row in reader:
                     total_entries += 1
-                    result, row = self.kwargs['row_filter'].filter(row)
+                    result = self.filter.filter(row)
                     if result:
                         writer.writerow([row[key] for key in KEYS])
                     else:

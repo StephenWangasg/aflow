@@ -21,7 +21,7 @@ def download_image(url_path):
         download_image_from_url(url, path)
     except (KeyboardInterrupt, SystemExit):
         raise
-    except Exception as e:
+    except Exception:
         pass
 
 

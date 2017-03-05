@@ -1,11 +1,9 @@
 '''Configurations for asos global'''
+
 import os
 import flow.configures.conf as conf
-from flow.parsers.asos_filter import AsosFilter
-from flow.utilities.logger import FlowLogger
 
-
-ASOS_KWARGS = {
+OP_KWARGS = {
     'site': 'asos',
     'country': 'global',
     'affiliate_name': 'ASOS',
@@ -36,9 +34,5 @@ ASOS_KWARGS = {
     ),
 }
 
-OP_KWARGS = {
-    'row_filter': AsosFilter(**ASOS_KWARGS)
-}
-
 conf.update(OP_KWARGS)
-OP_KWARGS.update(ASOS_KWARGS)
+

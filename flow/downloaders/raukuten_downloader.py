@@ -6,15 +6,12 @@ import socket
 import sys
 import urllib
 from flow.downloaders.downloader import IDownloader, ZeroDownloadExcept
-from flow.utilities.logger import FlowLogger
-
 
 class RaukutenDownloader(IDownloader):
     'Raukuten downloader'
 
     def __init__(self, kwargs):
-        IDownloader.__init__(self)
-        self.kwargs = kwargs
+        IDownloader.__init__(self, kwargs)
         self.kwargs['download_file_gz'] = os.path.join(
             kwargs['download_path'],
             kwargs['site'] + '.' + kwargs['country'] + '.gz')

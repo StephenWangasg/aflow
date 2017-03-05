@@ -12,6 +12,7 @@ from flow.dags.utils import asos_args, get_sub_dag
 
 from flow.downloaders.downloader import DownloaderDirector
 from flow.downloaders.raukuten_downloader import RaukutenDownloader
+from flow.parsers.asos_filter import AsosFilter
 from flow.parsers.parser import Parser
 from flow.configures.asos_conf import OP_KWARGS
 
@@ -21,14 +22,14 @@ t1 = PythonOperator(
     task_id='download_asos',
     provide_context=True,
     python_callable=lambda **kwargs: DownloaderDirector.construct(
-        RaukutenDownloader(OP_KWARGS)),
+        RaukutenDownloader(kwargs)),
     op_kwargs=OP_KWARGS,
     dag=DAG_)
 
 t2 = PythonOperator(
     task_id='parse_asos',
     provide_context=True,
-    python_callable=lambda **kwargs: Parser(kwargs).parse(),
+    python_callable=lambda **kwargs: Parser(AsosFilter(kwargs)).parse(),
     op_kwargs=OP_KWARGS,
     dag=DAG_)
 

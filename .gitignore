@@ -2,7 +2,8 @@
 *.*~
 .idea/
 .vscode/
-.temp/
+.tmp/
 .cache/
+.mongo/
 tags
 webapp/webapp_uwsgi.ini
