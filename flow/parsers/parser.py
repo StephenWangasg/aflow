@@ -46,6 +46,37 @@ class IRowFilter(CBase):
         return True if the row contains valid data, False othereise'''
         raise NotImplementedError('subclass must override filter()!')
 
+    def __update_site_country(self, row):
+        'adding site and country info'
+        row.update({'site': self.kwargs['site'], 'country': self.kwargs['country']})
+
+    def __update_map(self, row):
+        'change column name'
+        row.update({key: row[value] for (key, value) in self.kwargs['maps']})
+
+    def __update_prices(self, row, price_, price__):
+        'price'
+        try:
+            price1 = float(price_)
+        except ValueError:
+            price1 = 0.0
+        try:
+            price2 = float(price__)
+        except ValueError:
+            price2 = 0.0
+        disp_price = price2 if (price1 > price2 and price2 != 0.0) else price1
+        row.update({'price': str(price1), 'disc_price': str(
+            price2), 'display_price': str(disp_price)})
+
+    def update(self, row, price_, price__, prod_name):
+        'update row content'
+        #self.__update_site_country(row)
+        self.__update_map(row)
+        self.__update_prices(row, price_, price__)
+        rt_price = row['price']
+        sl_price = row['disc_price']
+        if rt_price == sl_price == 0:
+            self.kwargs['logger'].warning('(%s) retail and sale price both 0', prod_name)
 
 class Parser:
     'Parser class exposes the parse function'

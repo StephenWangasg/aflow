@@ -20,6 +20,8 @@ class Access:
                 'fashion': client['fashion'],
                 'products': client['fashion']['products'],
                 'ingestion': client['fashion']['ingestion'],
+                'gmvs': client['fashion']['gmvs'],
+                'db_status': client['fashion']['gmvs']
             }
             self.defined = True
 

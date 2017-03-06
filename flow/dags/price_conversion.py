@@ -4,9 +4,11 @@ sys.path.insert(0, flow_folder)
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-import requests, redis
-from flow.config import query_server
+import requests
+import redis
 from flow.dags.utils import currency_args
+import flow.configures.conf as conf
+
 
 def get_current_rates():
     sources = ['USD', 'AUD', 'GBP', 'SGD', 'MYR', 'IDR']
@@ -23,7 +25,8 @@ def get_current_rates():
 
 
 def cache_currency(**kwargs):
-    currency_cache = redis.StrictRedis(host=query_server['host'], port=6379, db=0)
+    currency_cache = redis.StrictRedis(host=kwargs['query_host'],
+                                       port=kwargs['query_port_redis'], db=0)
     conversions = get_current_rates()
     currency_cache.set('currencies', str(conversions))
 
@@ -33,4 +36,5 @@ t1 = PythonOperator(
     task_id='update_currency_conversion',
     provide_context=True,
     python_callable=cache_currency,
+    op_kwargs=conf.CONFIGS,
     dag=dag)

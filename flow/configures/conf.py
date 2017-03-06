@@ -3,8 +3,11 @@
 CONFIGS = {
 
     'log_path': '/images/models/logs/',
-    'mongo_host' : 'localhost',
-    'mongo_port' : 27017,
+    'mongo_host': 'localhost',
+    'mongo_port': 27017,
+    'query_host': '172.31.22.177',
+    'query_port': 8000,
+    'query_port_redis': 6379
 }
 
 DOWNLOAD_CONFIGS = {
@@ -13,8 +16,15 @@ DOWNLOAD_CONFIGS = {
     'feed_images_path': '/images/models/feed_images/',
 }
 
+WEBSITES = ['lazada', 'asos', 'farfetch', 'yoox', 'zalora',
+            'swap', 'flipkart', 'target', 'luisaviaroma']
+COUNTRIES = ['singapore', 'global', 'indonesia', 'malaysia', 'india']
+
+STATUSES = [True, False, 'download_error_url', 'download_error_url_404',
+            'download_error_url_timeout', 'server_error']
+
+
 def update(op_kwargs):
     'merge minimal configurations into feeds operational conf'
     op_kwargs.update(CONFIGS)
     op_kwargs.update(DOWNLOAD_CONFIGS)
-
