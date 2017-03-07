@@ -5,18 +5,15 @@ sys.path.insert(0, flow_folder)
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from flow.downloaders.utils import raukuten_download
-from flow.parsers.utils import parse_write
-from flow.config import CONFIGS, DOWNLOAD_CONFIGS
-from flow.dags.utils import asos_args, get_sub_dag
-
+from flow.dags.utils import get_sub_dag
+from flow.configures.conf import get_dag_args
+from flow.configures.asos_conf import OP_KWARGS
 from flow.downloaders.downloader import DownloaderDirector
 from flow.downloaders.raukuten_downloader import RaukutenDownloader
-from flow.parsers.asos_filter import AsosFilter
 from flow.parsers.parser import Parser
-from flow.configures.asos_conf import OP_KWARGS
+from flow.parsers.raukuten_filter import RaukutenFilter
 
-DAG_ = DAG('asos', default_args=asos_args)
+ASOS_DAG = DAG('asos', default_args=get_dag_args('asos.global'))
 
 t1 = PythonOperator(
     task_id='download_asos',
@@ -24,15 +21,15 @@ t1 = PythonOperator(
     python_callable=lambda **kwargs: DownloaderDirector.construct(
         RaukutenDownloader(kwargs)),
     op_kwargs=OP_KWARGS,
-    dag=DAG_)
+    dag=ASOS_DAG)
 
 t2 = PythonOperator(
     task_id='parse_asos',
     provide_context=True,
-    python_callable=lambda **kwargs: Parser(AsosFilter(kwargs)).parse(),
+    python_callable=lambda **kwargs: Parser(RaukutenFilter(kwargs)).parse(),
     op_kwargs=OP_KWARGS,
-    dag=DAG_)
+    dag=ASOS_DAG)
 
-t3 = get_sub_dag(OP_KWARGS, DAG_)
+t3 = get_sub_dag(OP_KWARGS, ASOS_DAG)
 
 t1 >> t2 >> t3

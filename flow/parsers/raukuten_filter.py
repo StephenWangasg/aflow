@@ -1,8 +1,8 @@
 import parser
 
 
-class AsosFilter(parser.IRowFilter):
-    'ASOS filter class'
+class RaukutenFilter(parser.IRowFilter):
+    'Raukuten filter class'
 
     def filter(self, row):
         cats1, cats2 = self.kwargs['cats']

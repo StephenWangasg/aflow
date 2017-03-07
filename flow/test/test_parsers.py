@@ -4,7 +4,7 @@ import os
 import unittest
 import shutil
 from flow.parsers.parser import Parser
-from flow.parsers.asos_filter import AsosFilter
+from flow.parsers.raukuten_filter import RaukutenFilter
 from flow.parsers.lazada_filter import LazadaFilter
 from flow.parsers.zalora_filter import ZaloraFilter
 import flow.configures.asos_conf as asos_conf
@@ -25,8 +25,8 @@ class TestParser(unittest.TestCase):
         if not os.path.isdir(self.log_dir):
             os.mkdir(self.log_dir)
 
-    def test_asos_filter(self):
-        'test asos filter'
+    def test_raukuten_filter(self):
+        'test raukuten filter'
         kwargs = asos_conf.OP_KWARGS.copy()
         # copy downloaded file test/data/asos.global.txt
         filename = kwargs['site'] + '.' + kwargs['country'] + '.txt'
@@ -43,7 +43,7 @@ class TestParser(unittest.TestCase):
                        'log_level_stdout': 'debug',
                        'log_file_size_in_bytes': 0x100000})
 
-        self.assertIsNone(Parser(AsosFilter(kwargs)).parse())
+        self.assertIsNone(Parser(RaukutenFilter(kwargs)).parse())
 
     def test_lazada_filter(self):
         'test lazada filter'
