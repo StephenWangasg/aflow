@@ -4,8 +4,8 @@ import redis
 import requests
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from .utils import get_task_id
-from ..configures import conf
+from utils import get_task_id
+from flow.configures import conf
 
 PRICE_CONVERSION_DAG = DAG(
     'price_conversion', default_args=conf.get_dag_args('currency'))

@@ -6,8 +6,6 @@ import conf
 OP_KWARGS = {
     'site': 'lazada',
     'country': '**UPDATE-ME**',
-    'download_file': '**UPDATE-ME**',
-    'parsed_file': '**UPDATE-ME**',
     'feed_url': '**UPDATE-ME**',
     'maps': (
         ('image_url', 'picture_url'),

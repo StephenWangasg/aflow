@@ -6,8 +6,6 @@ import conf
 OP_KWARGS = {
     'site': 'zalora',
     'country': '**UPDATE-ME**',
-    'download_file': '**UPDATE-ME**',
-    'parsed_file': '**UPDATE-ME**',
     'search_word': '**UPDATE-ME**',
     'maps': (
         ('product_name', 'NAME'),

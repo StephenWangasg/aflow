@@ -2,13 +2,13 @@
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from .utils import get_sub_dag, get_task_id
-from ..configures.conf import get_dag_args
-from ..configures.farfetch_conf import OP_KWARGS
-from ..downloaders.downloader import DownloaderDirector
-from ..downloaders.raukuten_downloader import RaukutenDownloader
-from ..parsers.parser import Parser
-from ..parsers.raukuten_filter import RaukutenFilter
+from utils import get_sub_dag, get_task_id
+from flow.configures.conf import get_dag_args
+from flow.configures.farfetch_conf import OP_KWARGS
+from flow.downloaders.downloader import DownloaderDirector
+from flow.downloaders.raukuten_downloader import RaukutenDownloader
+from flow.parsers.parser import Parser
+from flow.parsers.raukuten_filter import RaukutenFilter
 
 FARFETCH_GLOBAL_DAG = DAG('farfetch_global', default_args=get_dag_args('farfetch.global'))
 

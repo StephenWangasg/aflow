@@ -1,25 +1,20 @@
 'zalora malaysia DAG definition'
 
-import os
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from .utils import get_sub_dag, get_task_id
-from ..configures import conf
-from ..configures.zalora_conf import OP_KWARGS
-from ..downloaders.downloader import DownloaderDirector
-from ..downloaders.zalora_downloader import ZaloraDownloader
-from ..parsers.parser import Parser
-from ..parsers.zalora_filter import ZaloraFilter
+from utils import get_sub_dag, get_task_id
+from flow.configures import conf
+from flow.configures.zalora_conf import OP_KWARGS
+from flow.downloaders.downloader import DownloaderDirector
+from flow.downloaders.zalora_downloader import ZaloraDownloader
+from flow.parsers.parser import Parser
+from flow.parsers.zalora_filter import ZaloraFilter
 
 ZALORA_MALAYSIA_DAG = DAG(
     'zalora_malaysia', default_args=conf.get_dag_args('zalora.malaysia'))
 
 ZALORA_MALAYSIA_KWARGS = OP_KWARGS.copy()
 ZALORA_MALAYSIA_KWARGS['country'] = 'malaysia'
-ZALORA_MALAYSIA_KWARGS['download_file'] = os.path.join(
-    conf.DOWNLOAD_CONFIGS['download_path'], 'zalora.malaysia.txt')
-ZALORA_MALAYSIA_KWARGS['parsed_file'] = os.path.join(
-    conf.DOWNLOAD_CONFIGS['download_path'], 'zalora.malaysia.csv')
 ZALORA_MALAYSIA_KWARGS['search_word'] = 'ZALORA_MY-Product_Feed.txt.g'
 
 TASK1 = PythonOperator(

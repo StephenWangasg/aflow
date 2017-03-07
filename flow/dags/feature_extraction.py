@@ -1,12 +1,4 @@
-import sys
-from paths import flow_folder
-sys.path.insert(0, flow_folder)
 
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
-from flow.dags.utils import default_args
-from flow.config import classification_server, segmentation_server
-from flow.feature import feature_extraction
 '''
 dag = DAG('feature_extraction', default_args=default_args)
 

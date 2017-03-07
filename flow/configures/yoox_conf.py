@@ -6,8 +6,6 @@ import conf
 OP_KWARGS = {
     'site': 'yoox',
     'country': '**UPDATE-ME**',
-    'download_file': '**UPDATE-ME**',
-    'parsed_file': '**UPDATE-ME**',
     'affiliate_name': '**UPDATE-ME**',
     'cats': (
         "Apparel & Accessories > Clothing > Outerwear > Coats & Jackets",

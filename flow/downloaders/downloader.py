@@ -1,16 +1,18 @@
 '''Donwloader base interface: IDownloader
 and DownloaderDirector class'''
 
+import os
+import errno
 from datetime import datetime
 from flow.utilities.base import CBase
+
 
 class IDownloader(CBase):
     'downloader base class'
 
     def __init__(self, kwargs):
-        CBase.__init__(self)
-        self.kwargs = kwargs
-        self.ensure_logger(kwargs)
+        kwargs['log_file_ext'] = '.download'
+        CBase.__init__(self, kwargs)
 
     def download(self):
         'download feed'

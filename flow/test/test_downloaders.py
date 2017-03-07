@@ -29,9 +29,6 @@ class TestDownloader(unittest.TestCase):
         kwargs = asos_conf.OP_KWARGS.copy()
         kwargs.update({'log_path': self.log_dir,
                        'download_path': self.download_dir,
-                       'download_file': os.path.join(
-                           self.download_dir,
-                           (kwargs['site'] + '.' + kwargs['country'] + '.txt')),
                        'log_level_file': 'debug',
                        'log_level_stdout': 'info',
                        'log_file_size_in_bytes': 0x100000})
@@ -45,9 +42,6 @@ class TestDownloader(unittest.TestCase):
         kwargs['country'] = 'singapore'
         kwargs.update({'log_path': self.log_dir,
                        'download_path': self.download_dir,
-                       'download_file': os.path.join(
-                           self.download_dir,
-                           (kwargs['site'] + '.' + kwargs['country'] + '.txt')),
                        'feed_url': 'http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=sg&cat1=%22Fashion%22&cat2=%22Men%22%2C%22Women%22&cat3=%22Clothing%22&price=0&app=0',
                        'log_level_file': 'debug',
                        'log_level_stdout': 'debug',
@@ -63,9 +57,6 @@ class TestDownloader(unittest.TestCase):
         kwargs['country'] = 'singapore'
         kwargs.update({'log_path': self.log_dir,
                        'download_path': self.download_dir,
-                       'download_file': os.path.join(
-                           self.download_dir,
-                           (kwargs['site'] + '.' + kwargs['country'] + '.txt')),
                        'search_word': 'ZALORA_SG-Product_Feed.txt.g',
                        'log_level_file': 'debug',
                        'log_level_stdout': 'debug',

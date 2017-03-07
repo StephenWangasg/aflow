@@ -1,13 +1,10 @@
 'Configuration for target global'
 
-import os
 import conf
 
 OP_KWARGS = {
     'site': 'target',
     'country': 'global',
-    'download_file': os.path.join(conf.DOWNLOAD_CONFIGS['download_path'], 'target.global.txt'),
-    'parsed_file': os.path.join(conf.DOWNLOAD_CONFIGS['download_path'], 'target.global.csv'),
     'cats': (
         "Apparel & Accessories > Clothing > Dresses",
         "Apparel & Accessories > Clothing > One-Pieces",

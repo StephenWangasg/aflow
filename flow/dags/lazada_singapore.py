@@ -1,25 +1,20 @@
 'lazada singapore DAG definition'
 
-import os
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from .utils import get_sub_dag, get_task_id
-from ..configures import conf
-from ..configures.lazada_conf import OP_KWARGS
-from ..downloaders.downloader import DownloaderDirector
-from ..downloaders.lazada_downloader import LazadaDownloader
-from ..parsers.parser import Parser
-from ..parsers.lazada_filter import LazadaFilter
+from utils import get_sub_dag, get_task_id
+from flow.configures import conf
+from flow.configures.lazada_conf import OP_KWARGS
+from flow.downloaders.downloader import DownloaderDirector
+from flow.downloaders.lazada_downloader import LazadaDownloader
+from flow.parsers.parser import Parser
+from flow.parsers.lazada_filter import LazadaFilter
 
 LAZADA_SINGAPORE_DAG = DAG(
     'lazada_singapore', default_args=conf.get_dag_args('lazada.singapore'))
 
 LAZADA_SINGAPORE_KWARGS = OP_KWARGS.copy()
 LAZADA_SINGAPORE_KWARGS['country'] = 'singapore'
-LAZADA_SINGAPORE_KWARGS['download_file'] = os.path.join(
-    conf.DOWNLOAD_CONFIGS['download_path'], 'lazada.singapore.txt')
-LAZADA_SINGAPORE_KWARGS['parsed_file'] = os.path.join(
-    conf.DOWNLOAD_CONFIGS['download_path'], 'lazada.singapore.csv')
 LAZADA_SINGAPORE_KWARGS[
     'feed_url'] = 'http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=sg&cat1=%22Fashion%22&cat2=%22Men%22%2C%22Women%22&cat3=%22Clothing%22&price=0&app=0',
 

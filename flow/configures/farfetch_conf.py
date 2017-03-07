@@ -1,6 +1,5 @@
 '''Configurations for farfetch global'''
 
-import os
 import conf
 
 OP_KWARGS = {
@@ -8,8 +7,6 @@ OP_KWARGS = {
     'country': 'global',
     'affiliate_name': 'FarFetch',
     'feed_url': 'ftp://iQNECT:n39PzPcw@aftp.linksynergy.com/35653_3301502_mp.txt.gz',
-    'download_file': os.path.join(conf.DOWNLOAD_CONFIGS['download_path'], 'farfetch.global.txt'),
-    'parsed_file': os.path.join(conf.DOWNLOAD_CONFIGS['download_path'], 'farfetch.global.csv'),
     'prepend_header': ('product_id', 'product_name', 'sku', 'primary_cat',
                        'secondary_cat', 'product_url', 'image_url', 'c8', 'c9',
                        'c10', 'c11', 'c12', 'sale_price', 'retail_price', 'c15',

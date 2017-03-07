@@ -32,13 +32,10 @@ class TestParser(unittest.TestCase):
         filename = kwargs['site'] + '.' + kwargs['country'] + '.txt'
         filepath0 = os.path.join(test.TESTARGS['testdir'], 'data', filename)
         filepath1 = os.path.join(self.parser_dir, filename)
-        filepath2 = os.path.join(self.parser_dir,
-                                 kwargs['site'] + '.' + kwargs['country'] + '.csv')
         shutil.copyfile(filepath0, filepath1)
         kwargs.update({'log_path': self.log_dir,
                        'download_path': self.parser_dir,
                        'download_file': filepath1,
-                       'parsed_file': filepath2,
                        'log_level_file': 'debug',
                        'log_level_stdout': 'debug',
                        'log_file_size_in_bytes': 0x100000})
@@ -53,13 +50,10 @@ class TestParser(unittest.TestCase):
         filename = kwargs['site'] + '.' + kwargs['country'] + '.txt'
         filepath0 = os.path.join(test.TESTARGS['testdir'], 'data', filename)
         filepath1 = os.path.join(self.parser_dir, filename)
-        filepath2 = os.path.join(self.parser_dir,
-                                 kwargs['site'] + '.' + kwargs['country'] + '.csv')
         shutil.copyfile(filepath0, filepath1)
         kwargs.update({'log_path': self.log_dir,
                        'download_path': self.parser_dir,
                        'download_file': filepath1,
-                       'parsed_file': filepath2,
                        'log_level_file': 'debug',
                        'log_level_stdout': 'debug',
                        'log_file_size_in_bytes': 0x100000})
@@ -74,13 +68,10 @@ class TestParser(unittest.TestCase):
         filename = kwargs['site'] + '.' + kwargs['country'] + '.txt'
         filepath0 = os.path.join(test.TESTARGS['testdir'], 'data', filename)
         filepath1 = os.path.join(self.parser_dir, filename)
-        filepath2 = os.path.join(self.parser_dir,
-                                 kwargs['site'] + '.' + kwargs['country'] + '.csv')
         shutil.copyfile(filepath0, filepath1)
         kwargs.update({'log_path': self.log_dir,
                        'download_path': self.parser_dir,
                        'download_file': filepath1,
-                       'parsed_file': filepath2,
                        'log_level_file': 'debug',
                        'log_level_stdout': 'debug',
                        'log_file_size_in_bytes': 0x100000})

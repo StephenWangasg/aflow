@@ -5,15 +5,18 @@ and deletes log files whenever necessary'''
 
 import os
 import sys
+import errno
 import logging.handlers
+
 
 class FlowLogger:
     '''A universal logger class, logs to file and stdout'''
 
-    def __init__(self, site, country, log_file_path,
+    def __init__(self, site, country, log_file_path, log_file_ext='.log',
                  log_level_file='debug', log_level_stdout='debug',
                  log_file_size_in_bytes=0x3200000, log_file_count=10):
         self.log_file_path = log_file_path
+        self.log_file_ext = log_file_ext
         self.log_level_file = log_level_file
         self.log_level_stdout = log_level_stdout
         self.log_file_size_in_bytes = log_file_size_in_bytes
@@ -40,8 +43,14 @@ class FlowLogger:
         self.__setup_stdout_logger()
 
     def __setup_file_logger(self):
+        try:
+            os.makedirs(self.log_file_path)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
         file_handler = logging.handlers.RotatingFileHandler(
-            os.path.join(self.log_file_path, self.__logger + ".log"),
+            os.path.join(self.log_file_path,
+                         self.__logger + self.log_file_ext),
             maxBytes=self.log_file_size_in_bytes,
             backupCount=self.log_file_count)
         file_handler.setLevel(self.log_level_f)

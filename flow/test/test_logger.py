@@ -24,7 +24,7 @@ class TestLogger(unittest.TestCase):
     def log(self):
         'test logger, generate ~500 log files, each 1024 bytes'
         logg = logger.FlowLogger('website', 'country',
-                                 self.log_dir, 'debug', 'debug', 1024, 500)
+                                 self.log_dir, '.log', 'debug', 'debug', 1024, 500)
         for i in range(1000):
             logg.debug(
                 '------------Logger Test [%d]-------------', i)

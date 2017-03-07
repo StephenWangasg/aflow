@@ -3,9 +3,9 @@
 from datetime import datetime
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from .utils import get_task_id
-from ..configures import conf
-from ..utilities.access import Access
+from utils import get_task_id
+from flow.configures import conf
+from flow.utilities.access import Access
 
 
 DB_STATUS_DAG = DAG('db_status', default_args=conf.get_dag_args('db_status'))

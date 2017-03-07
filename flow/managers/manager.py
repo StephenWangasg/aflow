@@ -51,10 +51,9 @@ class Manager(CBase):
         return new_urls, delete_urls, same_urls
 
     def __init__(self, kwargs):
-        CBase.__init__(self)
-        self.kwargs = kwargs
+        kwargs['log_file_ext'] = '.manage'
+        CBase.__init__(self, kwargs)
         self.kwargs['accessor'] = Access(kwargs)
-        self.ensure_logger(kwargs)
 
     def update_insert_delete_urls(self):
         '''

@@ -2,13 +2,13 @@
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from .utils import get_sub_dag, get_task_id
-from ..configures.conf import get_dag_args
-from ..configures.swap_conf import OP_KWARGS
-from ..downloaders.downloader import DownloaderDirector
-from ..downloaders.swap_downloader import SwapDownloader
-from ..parsers.parser import Parser
-from ..parsers.swap_filter import SwapFilter
+from utils import get_sub_dag, get_task_id
+from flow.configures.conf import get_dag_args
+from flow.configures.swap_conf import OP_KWARGS
+from flow.downloaders.downloader import DownloaderDirector
+from flow.downloaders.swap_downloader import SwapDownloader
+from flow.parsers.parser import Parser
+from flow.parsers.swap_filter import SwapFilter
 
 SWAP_US_DAG = DAG('swap_us', default_args=get_dag_args('swap.us'))
 

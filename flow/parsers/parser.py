@@ -37,9 +37,8 @@ class IRowFilter(CBase):
     'row filter base class'
 
     def __init__(self, kwargs):
-        CBase.__init__(self)
-        self.kwargs = kwargs
-        self.ensure_logger(kwargs)
+        kwargs['log_file_ext'] = '.parse'
+        CBase.__init__(self, kwargs)
 
     def filter(self, row):
         '''filters(validates) a row from downloaded file,
@@ -48,7 +47,8 @@ class IRowFilter(CBase):
 
     def __update_site_country(self, row):
         'adding site and country info'
-        row.update({'site': self.kwargs['site'], 'country': self.kwargs['country']})
+        row.update({'site': self.kwargs['site'],
+                    'country': self.kwargs['country']})
 
     def __update_map(self, row):
         'change column name'
@@ -70,13 +70,15 @@ class IRowFilter(CBase):
 
     def update(self, row, price_, price__, prod_name):
         'update row content'
-        #self.__update_site_country(row)
+        # self.__update_site_country(row)
         self.__update_map(row)
         self.__update_prices(row, price_, price__)
         rt_price = row['price']
         sl_price = row['disc_price']
         if rt_price == sl_price == 0:
-            self.kwargs['logger'].warning('(%s) retail and sale price both 0', prod_name)
+            self.kwargs['logger'].warning(
+                '(%s) retail and sale price both 0', prod_name)
+
 
 class Parser:
     'Parser class exposes the parse function'
