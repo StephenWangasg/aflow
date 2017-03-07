@@ -6,31 +6,33 @@ from datetime import datetime, timedelta
 from airflow.operators.python_operator import PythonOperator
 import copy
 
+from ..managers.manager import Manager
+
 # use the current date minus 2 days as the start date
-date_now = datetime.now()-timedelta(days=2)
-base_start_date = date_now.replace(hour=15,minute=0,second=0)
+date_now = datetime.now() - timedelta(days=2)
+base_start_date = date_now.replace(hour=15, minute=0, second=0)
 
 # manually set the start date
 # base_start_date = datetime(2017,1,1,0,0,0)
 
 currency_start_date = base_start_date
-asos_start_date = base_start_date + timedelta(minutes = 1)
-farfetch_start_date = base_start_date + timedelta(minutes = 5)
-lazada_start_date = base_start_date + timedelta(minutes = 20)
-yoox_start_date = base_start_date + timedelta(minutes = 40)
-zalora_start_date = base_start_date + timedelta(hours = 1)
-swap_start_date = base_start_date + timedelta(minutes = 80)
-flipkart_start_date = base_start_date + timedelta(minutes = 100)
-target_start_date = base_start_date + timedelta(hours = 2)
-updatedb_start_date = base_start_date + timedelta(hours = 3)
-gmv_start_date = base_start_date + timedelta(minutes = 200)
-db_status_start_date = base_start_date + timedelta(minutes = 200)
+asos_start_date = base_start_date + timedelta(minutes=1)
+farfetch_start_date = base_start_date + timedelta(minutes=5)
+lazada_start_date = base_start_date + timedelta(minutes=20)
+yoox_start_date = base_start_date + timedelta(minutes=40)
+zalora_start_date = base_start_date + timedelta(hours=1)
+swap_start_date = base_start_date + timedelta(minutes=80)
+flipkart_start_date = base_start_date + timedelta(minutes=100)
+target_start_date = base_start_date + timedelta(hours=2)
+updatedb_start_date = base_start_date + timedelta(hours=3)
+gmv_start_date = base_start_date + timedelta(minutes=200)
+db_status_start_date = base_start_date + timedelta(minutes=200)
 
 default_args = {
     'owner': 'iqnect',
     'depends_on_past': False,
     'start_date': base_start_date,
-    'email':['sisong@iqnect.org'],
+    'email': ['sisong@iqnect.org'],
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
@@ -63,14 +65,22 @@ updatedb_args['start_date'] = updatedb_start_date
 gmv_args['start_date'] = gmv_start_date
 db_status_args['start_date'] = db_status_start_date
 
+
+def get_task_id(task, kwargs):
+    'generate the task id used by DAG operator'
+    try:
+        return task + '_' + kwargs['site'] + '_' + kwargs['country']
+    except KeyError:
+        return task
+
 def get_sub_dag(op_kwargs, dag):
-    '''
-    The common sub dag for all feeds
-    '''
+    'The common sub dag for all feeds'
     return PythonOperator(
-        task_id='update_insert_delete_urls',
+        task_id=get_task_id('manage', op_kwargs),
         provide_context=True,
-        python_callable=update_insert_delete_urls,
+        python_callable=lambda **kwargs: Manager(kwargs).update_insert_delete_urls(),
         op_kwargs=op_kwargs,
         dag=dag)
+
+
 

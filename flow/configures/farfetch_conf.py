@@ -1,7 +1,7 @@
 '''Configurations for farfetch global'''
 
 import os
-import flow.configures.conf as conf
+import conf
 
 OP_KWARGS = {
     'site': 'farfetch',

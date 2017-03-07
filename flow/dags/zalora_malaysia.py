@@ -1,78 +1,42 @@
-import sys
-from paths import flow_folder
-sys.path.insert(0, flow_folder)
+'zalora malaysia DAG definition'
 
+import os
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from flow.downloaders.utils import zalora_download
-from flow.parsers.utils import parse_write
-from flow.config import data_feed_path
-from flow.dags.utils import zalora_args, get_sub_dag
+from .utils import get_sub_dag, get_task_id
+from ..configures import conf
+from ..configures.zalora_conf import OP_KWARGS
+from ..downloaders.downloader import DownloaderDirector
+from ..downloaders.zalora_downloader import ZaloraDownloader
+from ..parsers.parser import Parser
+from ..parsers.zalora_filter import ZaloraFilter
 
-dag = DAG('zalora_malaysia', default_args=zalora_args)
+ZALORA_MALAYSIA_DAG = DAG(
+    'zalora_malaysia', default_args=conf.get_dag_args('zalora.malaysia'))
 
-website = 'zalora'
-country = 'malaysia'
-p = data_feed_path + website + country
+ZALORA_MALAYSIA_KWARGS = OP_KWARGS.copy()
+ZALORA_MALAYSIA_KWARGS['country'] = 'malaysia'
+ZALORA_MALAYSIA_KWARGS['download_file'] = os.path.join(
+    conf.DOWNLOAD_CONFIGS['download_path'], 'zalora.malaysia.txt')
+ZALORA_MALAYSIA_KWARGS['parsed_file'] = os.path.join(
+    conf.DOWNLOAD_CONFIGS['download_path'], 'zalora.malaysia.csv')
+ZALORA_MALAYSIA_KWARGS['search_word'] = 'ZALORA_MY-Product_Feed.txt.g'
 
-op_kwargs = {
-    'download_file': p + '.txt',
-    'new_parsed_csv': p + 'current.csv',
-    'website': website,
-    'country': country,
-    "search_word": "ZALORA_MY-Product_Feed.txt.g",
-    'map': [
-        ('product_name', 'NAME'),
-        ('currency', 'CURRENCY'),
-        ('product_url', 'BUYURL'),
-        ('image_url', 'IMAGEURL'),
-        ('unique_url', 'IMAGEURL')
-      ],
-    'cats': [
-        "Men>Clothing>T-Shirts",
-        "Men>Clothing>Polo Shirts",
-        "Men>International Brands>Clothing",
-        "Men>Clothing>Shirts",
-        "Men>Clothing>Pants",
-        "Men>Clothing>Outerwear",
-        "Men>Clothing>Jeans",
-        "Men>Clothing>Shorts",
-        "Men>Clothing>Men\"s Clothing",
-        "Men>Sports>Clothing",
-        "Women>Clothing>Playsuits & Jumpsuits",
-        "Women>Clothing>Dresses",
-        "Women>Clothing>Tops",
-        "Women>Clothing>Skirts",
-        "Women>Clothing>Outerwear",
-        "Women>Clothing>Shorts",
-        "Women>International Brands>Clothing",
-        "Women>Clothing>Pants & Leggings",
-        "Women>Korean Fashion>Clothing",
-        "Women>Sports>Clothing",
-        "Women>Clothing>Jeans",
-        "Women>Clothing>Women\"s Clothing",
-        "Women>Clothing>Plus Size",
-        "Women>International Brands>Sports",
-        "Women>Florals>Clothing",
-        "Women>Form-fitting>Clothing",
-        "Women>Rock Chic>Clothing",
-        "Women>Girl Boss>Clothing"
-      ]
-}
-
-t1 = PythonOperator(
-    task_id='download_zalora_malaysia',
-    python_callable=zalora_download,
-    op_kwargs=op_kwargs,
-    dag=dag)
-
-t2 = PythonOperator(
-    task_id='parse_zalora_malaysia',
+TASK1 = PythonOperator(
+    task_id=get_task_id('download', ZALORA_MALAYSIA_KWARGS),
     provide_context=True,
-    python_callable=parse_write,
-    op_kwargs=op_kwargs,
-    dag=dag)
+    python_callable=lambda **kwargs: DownloaderDirector.construct(
+        ZaloraDownloader(kwargs)),
+    op_kwargs=ZALORA_MALAYSIA_KWARGS,
+    dag=ZALORA_MALAYSIA_DAG)
 
-t3 = get_sub_dag(op_kwargs, dag)
+TASK2 = PythonOperator(
+    task_id=get_task_id('parse', ZALORA_MALAYSIA_KWARGS),
+    provide_context=True,
+    python_callable=lambda **kwargs: Parser(ZaloraFilter(kwargs)).parse(),
+    op_kwargs=ZALORA_MALAYSIA_KWARGS,
+    dag=ZALORA_MALAYSIA_DAG)
 
-t1 >> t2 >> t3
+TASK3 = get_sub_dag(ZALORA_MALAYSIA_KWARGS, ZALORA_MALAYSIA_DAG)
+
+TASK1 >> TASK2 >> TASK3

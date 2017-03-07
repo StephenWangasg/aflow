@@ -5,8 +5,8 @@ from ftplib import FTP
 from .downloader import IDownloader, ZeroDownloadExcept
 
 
-class TargetDownloader(IDownloader):
-    'Target downloader'
+class SwapDownloader(IDownloader):
+    'Swap downloader'
 
     def __init__(self, kwargs):
         IDownloader.__init__(self, kwargs)
@@ -20,13 +20,12 @@ class TargetDownloader(IDownloader):
             self.kwargs['downloaded'] = 0
             fil = self.kwargs['download_file']
             fgz = self.kwargs['download_file_gz']
-            ftp = FTP('products.impactradius.com')
-            ftp.login('ps-ftp_189204', 'CwHPeTx2kf')
-            ftp.cwd('Target')
-            ftp.retrbinary('RETR Target-Product-Feed-Commissioned-Items_IR.txt.gz',
+            ftp = FTP('datatransfer.cj.com')
+            ftp.login('4616059', 'JZ$TYXPJ')
+            ftp.cwd('outgoing/productcatalog/187926')
+            ftp.retrbinary('RETR Swap_com-Swap_com_Product_Catalog.txt.gz',
                            open(fgz, 'wb').write)
             ftp.quit()
-
             with gzip.open(fgz, 'rb') as ifile, open(fil, 'wb') as ofile:
                 self.kwargs['downloaded'] = 1
                 ofile.write(ifile.read())

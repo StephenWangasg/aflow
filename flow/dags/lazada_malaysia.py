@@ -1,49 +1,45 @@
-import sys
-from paths import flow_folder
-sys.path.insert(0, flow_folder)
+'lazada malaysia DAG definition'
 
+import os
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from flow.downloaders.utils import lazada_download
-from flow.parsers.utils import parse_write
-from flow.config import data_feed_path
-from flow.dags.utils import lazada_args, get_sub_dag
+from .utils import get_sub_dag, get_task_id
+from ..configures import conf
+from ..configures.lazada_conf import OP_KWARGS
+from ..downloaders.downloader import DownloaderDirector
+from ..downloaders.lazada_downloader import LazadaDownloader
+from ..parsers.parser import Parser
+from ..parsers.lazada_filter import LazadaFilter
+
+LAZADA_MALAYSIA_DAG = DAG(
+    'lazada_malaysia', default_args=conf.get_dag_args('lazada.malaysia'))
+
+LAZADA_MALAYSIA_KWARGS = OP_KWARGS.copy()
+
+LAZADA_MALAYSIA_KWARGS['country'] = 'malaysia'
+LAZADA_MALAYSIA_KWARGS['download_file'] = os.path.join(
+    conf.DOWNLOAD_CONFIGS['download_path'], 'lazada.malaysia.txt')
+LAZADA_MALAYSIA_KWARGS['parsed_file'] = os.path.join(
+    conf.DOWNLOAD_CONFIGS['download_path'], 'lazada.malaysia.csv')
+LAZADA_MALAYSIA_KWARGS[
+    'feed_url'] = 'http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=my&cat1=%22Fashion%22&cat2=%22Women%22%2C%22Men%22&cat3=%22Clothing%22&price=0&app=0',
 
 
-dag = DAG('lazada_malaysia', default_args=lazada_args)
-
-website = 'lazada'
-country = 'malaysia'
-p = data_feed_path + website + country
-
-op_kwargs = {
-    'download_file': p + '.txt',
-    'new_parsed_csv': p + 'current.csv',
-    'website': website,
-    'country': country,
-    "feed_url": "http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=my&cat1=%22Fashion%22&cat2=%22Women%22%2C%22Men%22&cat3=%22Clothing%22&price=0&app=0",
-    'map': [
-        ('image_url', 'picture_url'),
-        ('product_url', 'tracking_link'),
-        ('unique_url', 'picture_url')
-      ],
-    'cats': []
-}
-
-t1 = PythonOperator(
-    task_id='download_lazada_malaysia',
+TASK1 = PythonOperator(
+    task_id=get_task_id('download', LAZADA_MALAYSIA_KWARGS),
     provide_context=True,
-    python_callable=lazada_download,
-    op_kwargs=op_kwargs,
-    dag=dag)
+    python_callable=lambda **kwargs: DownloaderDirector.construct(
+        LazadaDownloader(kwargs)),
+    op_kwargs=LAZADA_MALAYSIA_KWARGS,
+    dag=LAZADA_MALAYSIA_DAG)
 
-t2 = PythonOperator(
-    task_id='parse_lazada_malaysia',
+TASK2 = PythonOperator(
+    task_id=get_task_id('parse', LAZADA_MALAYSIA_KWARGS),
     provide_context=True,
-    python_callable=parse_write,
-    op_kwargs=op_kwargs,
-    dag=dag)
+    python_callable=lambda **kwargs: Parser(LazadaFilter(kwargs)).parse(),
+    op_kwargs=LAZADA_MALAYSIA_KWARGS,
+    dag=LAZADA_MALAYSIA_DAG)
 
-t3 = get_sub_dag(op_kwargs, dag)
+TASK3 = get_sub_dag(LAZADA_MALAYSIA_KWARGS, LAZADA_MALAYSIA_DAG)
 
-t1 >> t2 >> t3
+TASK1 >> TASK2 >> TASK3

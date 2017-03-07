@@ -1,7 +1,7 @@
 '''Configurations for zalora(Singapore, Malaysia)
 please update the country specific setting in respective DAG'''
 
-import flow.configures.conf as conf
+import conf
 
 OP_KWARGS = {
     'site': 'zalora',

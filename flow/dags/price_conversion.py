@@ -1,16 +1,18 @@
-import sys
-from paths import flow_folder
-sys.path.insert(0, flow_folder)
+'price conversion'
 
+import redis
+import requests
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-import requests
-import redis
-from flow.dags.utils import currency_args
-import flow.configures.conf as conf
+from .utils import get_task_id
+from ..configures import conf
+
+PRICE_CONVERSION_DAG = DAG(
+    'price_conversion', default_args=conf.get_dag_args('currency'))
 
 
 def get_current_rates():
+    'get current rates'
     sources = ['USD', 'AUD', 'GBP', 'SGD', 'MYR', 'IDR']
     conversions = {}
     for source in sources:
@@ -19,22 +21,21 @@ def get_current_rates():
             'source': source,
             'currencies': 'USD,SGD,MYR,IDR'
         }
-        r = requests.get('http://apilayer.net/api/live', params=payload)
-        conversions.update(r.json()['quotes'])
+        ret = requests.get('http://apilayer.net/api/live', params=payload)
+        conversions.update(ret.json()['quotes'])
     return conversions
 
 
 def cache_currency(**kwargs):
+    'cache currency'
     currency_cache = redis.StrictRedis(host=kwargs['query_host'],
                                        port=kwargs['query_port_redis'], db=0)
     conversions = get_current_rates()
     currency_cache.set('currencies', str(conversions))
 
-dag = DAG('price_conversion', default_args=currency_args)
-
-t1 = PythonOperator(
-    task_id='update_currency_conversion',
+TASK1 = PythonOperator(
+    task_id=get_task_id('cache_currency', conf.CONFIGS),
     provide_context=True,
     python_callable=cache_currency,
     op_kwargs=conf.CONFIGS,
-    dag=dag)
+    dag=PRICE_CONVERSION_DAG)

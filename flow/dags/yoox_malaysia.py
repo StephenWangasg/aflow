@@ -1,63 +1,43 @@
-import sys
-from paths import flow_folder
-sys.path.insert(0, flow_folder)
+'yoox malaysia DAG definition'
 
+import os
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from flow.downloaders.utils import yoox_download
-from flow.parsers.utils import parse_write
-from flow.config import data_feed_path
-from flow.dags.utils import yoox_args, get_sub_dag
+from .utils import get_sub_dag, get_task_id
+from ..configures import conf
+from ..configures.yoox_conf import OP_KWARGS
+from ..downloaders.downloader import DownloaderDirector
+from ..downloaders.yoox_downloader import YooxDownloader
+from ..parsers.parser import Parser
+from ..parsers.yoox_filter import YooxFilter
 
-dag = DAG('yoox_malaysia', default_args=yoox_args)
+YOOX_MALAYSIA_DAG = DAG(
+    'yoox_malaysia', default_args=conf.get_dag_args('yoox.malaysia'))
 
-website = 'yoox'
-country = 'malaysia'
-p = data_feed_path + website + country
+YOOX_MALAYSIA_KWARGS = OP_KWARGS.copy()
+YOOX_MALAYSIA_KWARGS['country'] = 'malaysia'
+YOOX_MALAYSIA_KWARGS['download_file'] = os.path.join(
+    conf.DOWNLOAD_CONFIGS['download_path'], 'yoox.malaysia.txt')
+YOOX_MALAYSIA_KWARGS['parsed_file'] = os.path.join(
+    conf.DOWNLOAD_CONFIGS['download_path'], 'yoox.malaysia.csv')
+YOOX_MALAYSIA_KWARGS['affiliate_name'] = 'YOOX.com Malaysia'
 
-op_kwargs = {
-    'download_file': p + '.txt',
-    'new_parsed_csv': p + 'current.csv',
-    'website': website,
-    'country': country,
-    "affiliate_name": "YOOX.com Malaysia",
-    'map': [
-        ('product_name', 'Name'),
-        ('currency', 'Currency'),
-        ('product_url', 'Url'),
-        ('image_url', 'Image'),
-        ('unique_url', 'Url')
-    ],
-    'cats': [
-        "Apparel & Accessories > Clothing > Outerwear > Coats & Jackets",
-        "Apparel & Accessories > Clothing > Shirts & Tops",
-        "Apparel & Accessories > Clothing > One-Pieces",
-        "Apparel & Accessories > Clothing > Skirts",
-        "Apparel & Accessories > Clothing > Shorts",
-        "Apparel & Accessories > Clothing > Pants",
-        "Apparel & Accessories > Clothing",
-        "Apparel & Accessories > Clothing > Uniforms",
-        "Apparel & Accessories > Clothing > Suits",
-        "Apparel & Accessories > Clothing > Outerwear",
-        "Apparel & Accessories > Clothing > Outerwear > Snow Pants & Suits",
-        "Apparel & Accessories > Clothing > One-Pieces > Jumpsuits & Rompers"
-    ]
-}
-
-t1 = PythonOperator(
-    task_id='download_yoox_malaysia',
+TASK1 = PythonOperator(
+    task_id=get_task_id('download', YOOX_MALAYSIA_KWARGS),
     provide_context=True,
-    python_callable=yoox_download,
-    op_kwargs=op_kwargs,
-    dag=dag)
+    python_callable=lambda **kwargs: DownloaderDirector.construct(
+        YooxDownloader(kwargs)),
+    op_kwargs=YOOX_MALAYSIA_KWARGS,
+    dag=YOOX_MALAYSIA_DAG)
 
-t2 = PythonOperator(
-    task_id='parse_yoox_malaysia',
+TASK2 = PythonOperator(
+    task_id=get_task_id('parse', YOOX_MALAYSIA_KWARGS),
     provide_context=True,
-    python_callable=parse_write,
-    op_kwargs=op_kwargs,
-    dag=dag)
+    python_callable=lambda **kwargs: Parser(YooxFilter(kwargs)).parse(),
+    op_kwargs=YOOX_MALAYSIA_KWARGS,
+    dag=YOOX_MALAYSIA_DAG)
 
-t3 = get_sub_dag(op_kwargs, dag)
+TASK3 = get_sub_dag(YOOX_MALAYSIA_KWARGS, YOOX_MALAYSIA_DAG)
 
-t1 >> t2 >> t3
+TASK1 >> TASK2 >> TASK3
+

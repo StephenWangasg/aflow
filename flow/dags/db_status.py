@@ -1,16 +1,14 @@
-import sys
-from paths import flow_folder
-sys.path.insert(0, flow_folder)
+'db_status'
 
+from datetime import datetime
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from flow.dags.utils import db_status_args
-from flow.utilities.access import Access
-from datetime import datetime
-import flow.configures.conf as conf
+from .utils import get_task_id
+from ..configures import conf
+from ..utilities.access import Access
 
 
-DAG_ = DAG('db_status', default_args=db_status_args)
+DB_STATUS_DAG = DAG('db_status', default_args=conf.get_dag_args('db_status'))
 
 
 def get_db_status_single(site, location, accessor):
@@ -47,9 +45,9 @@ def get_db_status(**kwargs):
         for location in conf.COUNTRIES:
             get_db_status_single(site, location, accessor)
 
-t1 = PythonOperator(
-    task_id='db_status',
+TASK1 = PythonOperator(
+    task_id=get_task_id('db_status', conf.CONFIGS),
     provide_context=True,
     python_callable=get_db_status,
     op_kwargs=conf.CONFIGS,
-    dag=DAG_)
+    dag=DB_STATUS_DAG)

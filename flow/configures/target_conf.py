@@ -1,33 +1,14 @@
-import sys
-from paths import flow_folder
-sys.path.insert(0, flow_folder)
+'Configuration for target global'
 
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
-from flow.downloaders.target_downloader import target_download
-from flow.parsers.target_parser import parse_write
-from flow.config import data_feed_path
-from flow.dags.utils import target_args, get_sub_dag
+import os
+import conf
 
-
-dag = DAG('target', default_args=target_args)
-
-website = 'target'
-country = 'global'
-p = data_feed_path + website + country
-
-op_kwargs = {
-    'download_file': p + '.txt',
-    'new_parsed_csv': p + 'current.csv',
-    'website': website,
-    'country': country,
-    'map': [
-        ('product_name', 'Product Name'),
-        ('product_url', 'Product URL'),
-        ('image_url', 'Image URL'),
-        ('unique_url', 'Image URL')
-    ],
-    'cats': [
+OP_KWARGS = {
+    'site': 'target',
+    'country': 'global',
+    'download_file': os.path.join(conf.DOWNLOAD_CONFIGS['download_path'], 'target.global.txt'),
+    'parsed_file': os.path.join(conf.DOWNLOAD_CONFIGS['download_path'], 'target.global.csv'),
+    'cats': (
         "Apparel & Accessories > Clothing > Dresses",
         "Apparel & Accessories > Clothing > One-Pieces",
         "Apparel & Accessories > Clothing > One-Pieces > Leotards & Unitards",
@@ -77,24 +58,13 @@ op_kwargs = {
         "Apparel | Tops | Shirts | Tunics",
         "Apparel | Tops | Sweaters | Cardigans",
         "Apparel | Tops | Sweaters | Pullover Sweaters"
-    ]
+    ),
+    'maps': (
+        ('product_name', 'Product Name'),
+        ('product_url', 'Product URL'),
+        ('image_url', 'Image URL'),
+        ('unique_url', 'Image URL')
+    )
 }
 
-t1 = PythonOperator(
-    task_id='download_target',
-    provide_context=True,
-    python_callable=target_download,
-    op_kwargs=op_kwargs,
-    dag=dag)
-
-
-t2 = PythonOperator(
-    task_id='parse_target',
-    provide_context=True,
-    python_callable=parse_write,
-    op_kwargs=op_kwargs,
-    dag=dag)
-
-t3 = get_sub_dag(op_kwargs, dag)
-
-t1 >> t2 >> t3
+conf.update(OP_KWARGS)

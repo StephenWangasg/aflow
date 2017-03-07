@@ -1,33 +1,34 @@
-'swap us DAG definition'
+'target global DAG definition'
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from .utils import get_sub_dag, get_task_id
 from ..configures.conf import get_dag_args
-from ..configures.swap_conf import OP_KWARGS
+from ..configures.target_conf import OP_KWARGS
 from ..downloaders.downloader import DownloaderDirector
-from ..downloaders.swap_downloader import SwapDownloader
+from ..downloaders.target_downloader import TargetDownloader
 from ..parsers.parser import Parser
-from ..parsers.swap_filter import SwapFilter
+from ..parsers.target_filter import TargetFilter
 
-SWAP_US_DAG = DAG('swap_us', default_args=get_dag_args('swap.us'))
+TARGET_GLOBAL_DAG = DAG(
+    'target_global', default_args=get_dag_args('target.global'))
 
 TASK1 = PythonOperator(
     task_id=get_task_id('download', OP_KWARGS),
     provide_context=True,
     python_callable=lambda **kwargs: DownloaderDirector.construct(
-        SwapDownloader(kwargs)),
+        TargetDownloader(kwargs)),
     op_kwargs=OP_KWARGS,
-    dag=SWAP_US_DAG)
+    dag=TARGET_GLOBAL_DAG)
 
 
 TASK2 = PythonOperator(
     task_id=get_task_id('parse', OP_KWARGS),
     provide_context=True,
-    python_callable=lambda **kwargs: Parser(SwapFilter(kwargs)).parse(),
+    python_callable=lambda **kwargs: Parser(TargetFilter(kwargs)).parse(),
     op_kwargs=OP_KWARGS,
-    dag=SWAP_US_DAG)
+    dag=TARGET_GLOBAL_DAG)
 
-TASK3 = get_sub_dag(OP_KWARGS, SWAP_US_DAG)
+TASK3 = get_sub_dag(OP_KWARGS, TARGET_GLOBAL_DAG)
 
 TASK1 >> TASK2 >> TASK3

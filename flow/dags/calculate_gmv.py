@@ -1,15 +1,15 @@
-import sys
-from paths import flow_folder
-sys.path.insert(0, flow_folder)
 
+'calculate gmv'
+
+from datetime import datetime
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from flow.dags.utils import gmv_args
-from datetime import datetime
-from flow.utilities.access import Access
-import flow.configures.conf as conf
+from .utils import get_task_id
+from ..configures import conf
+from ..utilities.access import Access
 
-DAG_ = DAG('calculate_gmv', default_args=gmv_args)
+
+CALCULATE_GMV_DAG = DAG('calculate_gmv', default_args=conf.get_dag_args('gmv'))
 
 
 def calculate_gmv_single(site, location, accessor):
@@ -46,9 +46,9 @@ def calculate_gmv(**kwargs):
         for location in conf.COUNTRIES:
             calculate_gmv_single(site, location, accessor)
 
-t1 = PythonOperator(
-    task_id='calculate_gmv',
+TASK1 = PythonOperator(
+    task_id=get_task_id('calculate_gmv', conf.CONFIGS),
     provide_context=True,
     python_callable=calculate_gmv,
     op_kwargs=conf.CONFIGS,
-    dag=DAG_)
+    dag=CALCULATE_GMV_DAG)
