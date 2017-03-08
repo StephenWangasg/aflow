@@ -23,8 +23,8 @@ class LazadaDownloader(IDownloader):
             hclient = httplib2.Http()
             _, content = hclient.request(target.geturl(), 'GET', '', headers)
             with open(self.kwargs['download_file'], 'wb') as data_feed_file:
-                self.kwargs['downloaded'] = 1
                 data_feed_file.write(content)
+                self.kwargs['downloaded'] = 1
             if not self.kwargs['downloaded']:
                 raise ZeroDownloadExcept
         except:

@@ -14,7 +14,7 @@ from flow.managers.manager import Manager
 # from ..managers.manager import Manager
 
 # # use the current date minus 2 days as the start date
-# date_now = datetime.now() - timedelta(days=2)
+# date_now = datetime.utcnow() - timedelta(days=2)
 # base_start_date = date_now.replace(hour=15, minute=0, second=0)
 
 # # manually set the start date

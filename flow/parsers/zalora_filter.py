@@ -4,12 +4,16 @@ import parser
 class ZaloraFilter(parser.IRowFilter):
     'zalora filter class'
 
+    def __init__(self, kwargs):
+        parser.IRowFilter.__init__(self, kwargs)
+        self.cats = [s.lower() for s in self.kwargs['cats']]
+
     def filter(self, row):
-        cats = [s.lower() for s in self.kwargs['cats']]
+        cats = self.cats
         if not any(word in row['KEYWORDS'].lower() for word in cats):
             self.kwargs['logger'].debug('Did not find category keywords in (%s)', row['KEYWORDS'])
             return False
-        if any(word.lower() in row['NAME'].lower() for word in parser.INVALID_KEYWORDS):
+        if any(word in row['NAME'].lower() for word in parser.INVALID_KEYWORDS):
             self.kwargs['logger'].debug('Invalid keywords in NAME field (%s)', row['NAME'])
             return False
         if row['KEYWORDS'].startswith('Women'):

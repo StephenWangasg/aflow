@@ -1,10 +1,10 @@
-'update_db DAG definition'
+# 'update_db DAG definition'
 
 import os
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from utils import get_task_id
-from flow.configures.conf import CONFIGS, CATEGORIES, WEBSITES, COUNTRIES, LAYER, LAYER_DIMENSION, ATTRIBUTE_MAP, get_dag_args
+from flow.configures.conf import CONFIGS, CATEGORIES, WEBSITES, COUNTRIES, LAYER, LAYER_DIMENSION, ATTRIBUTE_LENGTH, ATTRIBUTE_MAP, get_dag_args
 from flow.utilities.utils import Server
 from flow.utilities.access import Access
 import cPickle as pickle
@@ -102,7 +102,7 @@ def create_annoy_for_categories(**kwargs):
 
 
 def get_attribute_values(returned='key'):
-    with.open(os.path.join(CONFIGS['model_path'], CONFIGS['attribute_tree'])) as data_file:
+    with open(os.path.join(CONFIGS['model_path'], CONFIGS['attribute_tree'])) as data_file:
         attribute_tree = json.load(data_file)
     inv_attribute_map = {v: k for k, v in ATTRIBUTE_MAP.items()}
     for child1 in attribute_tree['children']:
@@ -117,8 +117,8 @@ def get_attribute_values(returned='key'):
                         attribute = inv_attribute_map[child5[returned]]
                         for child6 in child5['children']:
                             attribute_val = inv_attribute_map[child6[returned]]
-                            for location in locations:
-                                yield gender_val, category_val, attribute, attribute_val, attribute_lengths[attribute], location
+                            for location in COUNTRIES:
+                                yield gender_val, category_val, attribute, attribute_val, ATTRIBUTE_LENGTH[attribute], location
 
 
 def _create_annoy_for_filters(_set):
@@ -204,6 +204,6 @@ t6 = PythonOperator(
     task_id='restart_server',
     provide_context=True,
     python_callable=restart_server,
-    dag=dag)
+    dag=UPDATE_DB_DAG)
 
 t1 >> t2 >> t3 >> t4 >> t5 >> t6

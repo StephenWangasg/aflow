@@ -44,7 +44,7 @@ class DownloaderDirector:
         Logs are added around each step'''
 
         # step 1: download feed
-        start_time = datetime.now()
+        start_time = datetime.utcnow()
         downloader.kwargs['logger'].info(
             'Start downloading at %s', start_time.strftime("%X,%B %d,%Y"))
         downloader.download()
@@ -52,13 +52,13 @@ class DownloaderDirector:
             downloader.kwargs['logger'].error(
                 'Download error', exc_info=downloader.kwargs['download_error'])
             raise downloader.kwargs['download_error'][1]
-        end_time = datetime.now()
+        end_time = datetime.utcnow()
         downloader.kwargs['logger'].info('Finish downloading at %s, duration %d sec',
                                          end_time.strftime("%X,%B %d,%Y"),
                                          (end_time - start_time).total_seconds())
 
         # step 2: transform the content
-        start_time = datetime.now()
+        start_time = datetime.utcnow()
         downloader.kwargs['logger'].info(
             'Start transforming at %s', start_time.strftime("%X,%B %d,%Y"))
         downloader.transform()
@@ -66,7 +66,7 @@ class DownloaderDirector:
             downloader.kwargs['logger'].error(
                 'Transform error', exc_info=downloader.kwargs['download_error'])
             raise downloader.kwargs['download_error'][1]
-        end_time = datetime.now()
+        end_time = datetime.utcnow()
         downloader.kwargs['logger'].info('Finish transforming at %s, duration %d sec',
                                          end_time.strftime("%X,%B %d,%Y"),
                                          (end_time - start_time).total_seconds())

@@ -2,17 +2,17 @@ from pymongo import MongoClient
 import os
 
 CONFIGS = {
-    'log_path': '/home/stephen/tmp/images/models/logs/',
+    'log_path': '/home/sisong/tmp/images/models/logs/',
 }
 
 DOWNLOAD_CONFIGS = {
-    'download_path': '/home/stephen/tmp/images/models/feeds/',
+    'download_path': '/home/sisong/tmp/images/models/feeds/',
 
 }
-model_path = '/home/stephen/tmp/images/models/'
-data_feed_path = '/home/stephen/tmp/images/models/feeds/'
-feed_images_path = '/home/stephen/tmp/images/models/feed_images/'
-log_file_path = '/home/stephen/tmp/images/logs/'
+model_path = '/home/sisong/tmp/images/models/'
+data_feed_path = '/home/sisong/tmp/images/models/feeds/'
+feed_images_path = '/home/sisong/tmp/images/models/feed_images/'
+log_file_path = '/home/sisong/tmp/images/logs/'
 
 for my_file in (model_path,
                 data_feed_path,

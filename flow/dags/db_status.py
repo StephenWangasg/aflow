@@ -19,7 +19,7 @@ def get_db_status_single(site, location, accessor):
         {'site': site, 'location': location, 'status': 'total'},
         {'$set': {
             'count': total,
-            'last_modified': datetime.now(),
+            'last_modified': datetime.utcnow(),
         }},
         upsert=True
     )
@@ -32,7 +32,7 @@ def get_db_status_single(site, location, accessor):
             {'site': site, 'location': location, 'status': status},
             {'$set': {
                 'count': count,
-                'last_modified': datetime.now(),
+                'last_modified': datetime.utcnow(),
             }},
             upsert=True
         )

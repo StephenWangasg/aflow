@@ -13,7 +13,7 @@ class FlowLogger:
     '''A universal logger class, logs to file and stdout'''
 
     def __init__(self, site, country, log_file_path, log_file_ext='.log',
-                 log_level_file='debug', log_level_stdout='debug',
+                 log_level_file='debug', log_level_stdout='disable',
                  log_file_size_in_bytes=0x3200000, log_file_count=10):
         self.log_file_path = log_file_path
         self.log_file_ext = log_file_ext
@@ -33,14 +33,25 @@ class FlowLogger:
                               'warning': logging.WARNING,
                               'error': logging.ERROR,
                               'critical': logging.CRITICAL}
-        self.log_level_f = flow_logger_levels[self.log_level_file]
-        self.log_level_s = flow_logger_levels[self.log_level_stdout]
-        self.formatter = logging.Formatter(self.__logger_format)
         self.logger = logging.getLogger(self.__logger)
         self.logger.propagate = False
         self.logger.setLevel(logging.DEBUG)
-        self.__setup_file_logger()
-        self.__setup_stdout_logger()
+        if self.log_level_file == self.log_level_stdout == 'disable':
+            logging.disable(logging.CRITICAL)
+        elif self.log_level_file == 'disable':
+            self.log_level_s = flow_logger_levels[self.log_level_stdout]
+            self.formatter = logging.Formatter(self.__logger_format)
+            self.__setup_stdout_logger()
+        elif self.log_level_stdout == 'disable':
+            self.log_level_f = flow_logger_levels[self.log_level_file]
+            self.formatter = logging.Formatter(self.__logger_format)
+            self.__setup_file_logger()
+        else:
+            self.log_level_f = flow_logger_levels[self.log_level_file]
+            self.log_level_s = flow_logger_levels[self.log_level_stdout]
+            self.formatter = logging.Formatter(self.__logger_format)
+            self.__setup_file_logger()
+            self.__setup_stdout_logger()
 
     def __setup_file_logger(self):
         try:

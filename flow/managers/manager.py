@@ -62,7 +62,7 @@ class Manager(CBase):
         Insert urls in new_urls set
         Update urls in same_urls set
         '''
-        start_time = datetime.now()
+        start_time = datetime.utcnow()
         self.kwargs['logger'].info('Start updating Mongodb (update/insert/delete) urls at %s',
                                    start_time.strftime("%X,%B %d,%Y"))
         current_parsed_path = self.kwargs['parsed_file']
@@ -126,7 +126,7 @@ class Manager(CBase):
         self.kwargs['logger'].info('Manager summary:')
         self.kwargs['logger'].info('New: %d, Delete: %d, Update: %d',
                                    new_urls_len, delete_urls_len, same_urls_len)
-        end_time = datetime.now()
+        end_time = datetime.utcnow()
         self.kwargs['logger'].info('Finish updating mongodb at %s, duration %d sec',
                                    end_time.strftime("%X,%B %d,%Y"),
                                    (end_time - start_time).total_seconds())

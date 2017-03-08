@@ -16,9 +16,8 @@ LAZADA_MALAYSIA_DAG = DAG(
 LAZADA_MALAYSIA_KWARGS = OP_KWARGS.copy()
 
 LAZADA_MALAYSIA_KWARGS['country'] = 'malaysia'
-LAZADA_MALAYSIA_KWARGS[
-    'feed_url'] = 'http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=my&cat1=%22Fashion%22&cat2=%22Women%22%2C%22Men%22&cat3=%22Clothing%22&price=0&app=0',
-
+LAZADA_MALAYSIA_KWARGS['feed_url'] = \
+    'http://lap.lazada.com/datafeed2/download.php?affiliate=69829&country=my&cat1=%22Fashion%22&cat2=%22Women%22%2C%22Men%22&cat3=%22Clothing%22&price=0&app=0'  #DO NOT ADD comma(,) here
 
 TASK1 = PythonOperator(
     task_id=get_task_id('download', LAZADA_MALAYSIA_KWARGS),
