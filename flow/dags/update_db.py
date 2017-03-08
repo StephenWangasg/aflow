@@ -61,7 +61,7 @@ def _mongo2aero(_set):
         key = ('fashion', _set, str(idx))
         client.put(key, bins)
         product_map[bins['hashedId']] = bins['id']
-    with open(CONFIGS['model_path'] + 'annoy_index_files/' + _set + '/' + 'hashedIdmap.p', 'wb') as f:
+    with open(os.path.join(CONFIGS['model_path'], 'annoy_index_files', _set, 'hashedIdmap.p'), 'wb') as f:
         pickle.dump(product_map, f)
 
 
@@ -136,7 +136,7 @@ def _create_annoy_for_filters(_set):
         for (key, meta, bins) in query.results():
             if bins['gender'] == gender_val and bins[attribute] == attribute_val and bins['location'] == location:
                 aero_annoy_map[count] = bins['id']
-                t.add_item(count, bins[attribute + layer])
+                t.add_item(count, bins[attribute + LAYER])
                 count += 1
         t.build(10)
         write_path = CONFIGS['model_path'] + 'annoy_index_files/' + _set + '/' + \

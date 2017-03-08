@@ -3,7 +3,7 @@
 import os
 import csv
 import uuid
-from datetime import datetime
+import datetime
 import pymongo
 import flow.utilities.utils as utils
 from flow.utilities.access import Access
@@ -62,7 +62,7 @@ class Manager(CBase):
         Insert urls in new_urls set
         Update urls in same_urls set
         '''
-        start_time = datetime.utcnow()
+        start_time = datetime.datetime.utcnow()
         self.kwargs['logger'].info('Start updating Mongodb (update/insert/delete) urls at %s',
                                    start_time.strftime("%X,%B %d,%Y"))
         current_parsed_path = self.kwargs['parsed_file']
@@ -116,7 +116,7 @@ class Manager(CBase):
             {
                 '$push': {
                     'counts': {
-                        'date': datetime.utcnow(),
+                        'date': datetime.datetime.utcnow(),
                         'newCount': new_urls_len,
                         'deleteCount': delete_urls_len,
                         'overlapCount': same_urls_len
@@ -126,11 +126,11 @@ class Manager(CBase):
         self.kwargs['logger'].info('Manager summary:')
         self.kwargs['logger'].info('New: %d, Delete: %d, Update: %d',
                                    new_urls_len, delete_urls_len, same_urls_len)
-        end_time = datetime.utcnow()
+        end_time = datetime.datetime.utcnow()
         self.kwargs['logger'].info('Finish updating mongodb at %s, duration %d sec',
                                    end_time.strftime("%X,%B %d,%Y"),
                                    (end_time - start_time).total_seconds())
         return new_urls_len, delete_urls_len, same_urls_len
-        # pool = eventlet.GreenPool()
-        # for _ in pool.imap(utils.download_image, image_paths[:10]):
-        #     pass
+#         # pool = eventlet.GreenPool()
+#         # for _ in pool.imap(utils.download_image, image_paths[:10]):
+#         #     pass

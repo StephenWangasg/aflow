@@ -9,17 +9,13 @@ import flow.configures.zalora_conf as zalora_conf
 import flow.test.arguments as test
 from flow.managers.manager import Manager
 
+
 class TestManager(unittest.TestCase):
     '''TestManager class'''
 
     def setUp(self):
         self.manager_dir = os.path.join(test.TESTARGS['tmpdir'], 'manager')
         self.log_dir = os.path.join(self.manager_dir, 'logs')
-
-        if not os.path.isdir(self.manager_dir):
-            os.mkdir(self.manager_dir)
-        if not os.path.isdir(self.log_dir):
-            os.mkdir(self.log_dir)
 
     def process(self, kwargs):
         'process'
@@ -54,7 +50,6 @@ class TestManager(unittest.TestCase):
         filename = kwargs['site'] + '.' + kwargs['country'] + '.csv'
         filepath0 = os.path.join(test.TESTARGS['testdir'], 'data', filename)
         filepath1 = os.path.join(self.manager_dir, filename)
-
         shutil.copyfile(filepath0, filepath1)
         kwargs.update({'log_path': self.log_dir,
                        'parsed_file': filepath1,
@@ -104,4 +99,3 @@ class TestManager(unittest.TestCase):
                        'log_level_stdout': 'info'})
 
         self.process(kwargs)
-

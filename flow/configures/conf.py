@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 
 CONFIGS = {
-    'log_path': '/home/sisong/tmp/images/models/logs/',
+    'log_path': '/images/models/logs/',
     # 'disable', 'debug', 'info', 'warning', 'error' or 'critical'
     'log_level_file': 'debug',
     'log_level_stdout': 'disable',
@@ -20,9 +20,9 @@ CONFIGS = {
     'classification_port': 8000,
     'aerospike': {'hosts': [('172.31.25.128', 3000)], 'policies': {
         'timeout': 5000}},
-    'model_path': '/home/sisong/tmp/images/models/',
-    'download_path': '/home/sisong/tmp/images/models/feeds/',
-    'feed_images_path': '/home/sisong/tmp/images/models/feed_images/',
+    'model_path': '/images/models/',
+    'download_path': '/images/models/feeds/',
+    'feed_images_path': '/images/models/feed_images/',
     'attribute_tree': 'attribute_tree.json',
     'extraction_threads' : 4,
 }
