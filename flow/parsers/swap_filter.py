@@ -10,6 +10,8 @@ class SwapFilter(parser.IRowFilter):
 
     def filter(self, row):
         cats = self.cats
+        if not self.check_field(row, ('ADVERTISERCATEGORY', 'NAME')):
+            return False
         if not any(word in row['ADVERTISERCATEGORY'].lower() for word in cats):
             self.kwargs['logger'].debug(
                 'Did not find category keywords in (%s)', row['ADVERTISERCATEGORY'])
@@ -27,6 +29,6 @@ class SwapFilter(parser.IRowFilter):
                 'ADVERTISERCATEGORY(%s) contains invalid value', row['ADVERTISERCATEGORY'])
             return False
 
-        self.update(row, row['PRICE'], row['SALEPRICE'], row['NAME'])
+        self.update(row, 'PRICE', 'SALEPRICE', row['NAME'])
 
         return True

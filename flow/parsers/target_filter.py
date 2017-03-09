@@ -11,6 +11,8 @@ class TargetFilter(parser.IRowFilter):
 
     def filter(self, row):
         cats = self.cats
+        if not self.check_field(row, ('Category','Product Name')):
+            return False
         if not any(word in row['Category'].lower() for word in cats):
             self.kwargs['logger'].debug(
                 'Did not find category keywords in (%s)', row['Category'])
@@ -36,7 +38,6 @@ class TargetFilter(parser.IRowFilter):
             row['gender'] = -1
         row['currency'] = 'USD'
 
-        self.update(row, row['Original Price'], row[
-                    'Current Price'], prod_name)
+        self.update(row, 'Original Price', 'Current Price', prod_name)
 
         return True

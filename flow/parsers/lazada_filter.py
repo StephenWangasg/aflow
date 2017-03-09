@@ -5,6 +5,8 @@ class LazadaFilter(parser.IRowFilter):
     'lazada filter class'
 
     def filter(self, row):
+        if not self.check_field(row, ('Category lv3', 'product_name', 'Category lv2')):
+            return False
         if row['Category lv3'] != 'Clothing':
             self.kwargs['logger'].debug(
                 'Category lv3 (%s) not Clothing.', row['Category lv3'])
@@ -26,7 +28,7 @@ class LazadaFilter(parser.IRowFilter):
             self.kwargs['logger'].debug('Category lv2 (%s) is invalid value.', row['Category lv2'])
             return False
 
-        self.update(row, row['sale_price'], row['discounted_price'], prod_name)
+        self.update(row, 'sale_price', 'discounted_price', prod_name)
 
         return True
 

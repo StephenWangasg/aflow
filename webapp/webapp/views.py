@@ -1,23 +1,24 @@
 import csv
 import redis
 import ast
+import sys
+from os import path
 
-from flow import config
+sys.path.append(path.dirname(path.dirname(
+    path.dirname(path.abspath(__file__)))))
+import flow.configures.conf as conf
+from flow.utilities.access import Access
+#from flow.utilities.logger import FlowLogger
 
-
-from pymongo import MongoClient
 from django import db
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
 from datetime import datetime
 
-mongo_client_ = MongoClient()
-_db = mongo_client_['fashion']
-collection = _db['products']
-gmv_collection = _db['gmvs']
-db_status_collection = _db['db_status']
+#logger=FlowLogger('fashion','ingestion', conf.CONFIGS['log_path']+'webapp')
 
+accessor = Access(conf.CONFIGS)
 
 def send_response(response):
     response["Access-Control-Allow-Origin"] = '*'
@@ -95,7 +96,7 @@ def export_gmvs(request):
 
 
 def query_db_status():
-    records = db_status_collection.find()
+    records = accessor.db_status.find()
     res_dict = {}
     for r in records:
         site = r['site']
@@ -154,12 +155,13 @@ def query_db_status():
 
 
 def query_gmvs():
-    currency_cache = redis.StrictRedis(host=config.query_server['host'], port=6379, db=0)
+    currency_cache = redis.StrictRedis(host=conf.CONFIGS['query_host'], port=conf.CONFIGS['query_port_redis'], db=0)
     exist = currency_cache.get('currencies')
     conversions = ast.literal_eval(exist)
 
-    records = gmv_collection.find()
+    records = accessor.gmvs.find()
     res_list = []
+
     # Calculate GMV in USD
     for r in records:
         key = r['currency'] + 'USD' 
@@ -183,12 +185,11 @@ def query_gmvs():
         count_total += r['count']
         gmv_total += r['usd']
     res_list.append({
-        'site': 'Total',
-        'location': '',
-        'count': count_total,
-        'gmv': '',
-        'usd': gmv_total,
-    })
+            'site': 'Total',
+            'location': '',
+            'count': count_total,
+            'gmv': '',
+            'usd': gmv_total})
     return res_list
 
 def compare_res_dict(dict1, dict2):

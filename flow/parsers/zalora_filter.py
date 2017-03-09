@@ -10,7 +10,9 @@ class ZaloraFilter(parser.IRowFilter):
 
     def filter(self, row):
         cats = self.cats
-        if not any(word in row['KEYWORDS'].lower() for word in cats):
+        if not self.check_field(row, ('KEYWORDS', 'NAME')):
+           return False
+        if not row['KEYWORDS'] or not any(word in row['KEYWORDS'].lower() for word in cats):
             self.kwargs['logger'].debug('Did not find category keywords in (%s)', row['KEYWORDS'])
             return False
         if any(word in row['NAME'].lower() for word in parser.INVALID_KEYWORDS):
@@ -24,7 +26,7 @@ class ZaloraFilter(parser.IRowFilter):
             self.kwargs['logger'].debug('KEYWORDS(%s) contains invalid value', row['KEYWORDS'])
             return False
 
-        self.update(row, row['PRICE'], row['SALEPRICE'], row['NAME'])
+        self.update(row, 'PRICE', 'SALEPRICE', row['NAME'])
 
         return True
 

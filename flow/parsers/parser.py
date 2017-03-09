@@ -45,6 +45,14 @@ class IRowFilter(CBase):
         return True if the row contains valid data, False othereise'''
         raise NotImplementedError('subclass must override filter()!')
 
+    def check_field(self, row, field_names):
+        for field in field_names:
+            if field not in row:
+                self.kwargs['logger'].warning('field {%s} not in row dict', field)
+                self.kwargs['logger'].debug('row=%s', row)
+                return False
+        return True
+ 
     def __update_site_country(self, row):
         'adding site and country info'
         row.update({'site': self.kwargs['site'],
@@ -57,12 +65,12 @@ class IRowFilter(CBase):
     def __update_prices(self, row, price_, price__):
         'price'
         try:
-            price1 = float(price_)
-        except ValueError:
+            price1 = float(row[price_])
+        except (ValueError, KeyError):
             price1 = 0.0
         try:
-            price2 = float(price__)
-        except ValueError:
+            price2 = float(row[price__])
+        except (ValueError, KeyError):
             price2 = 0.0
         disp_price = price2 if (price1 > price2 and price2 != 0.0) else price1
         row.update({'price': str(price1), 'disc_price': str(
@@ -105,7 +113,7 @@ class Parser:
                     excp = total_entries = invalid_entries = 0
                     dialect.delimiter = delimiter
                     ifile.seek(0)
-                    reader = csv.DictReader(ifile, dialect=dialect)
+                    reader = csv.DictReader(ifile, restval='', dialect=dialect)
                     writer = csv.writer(ofile, delimiter='\t', quotechar='"')
                     writer.writerow(KEYS)
                     for row in reader:

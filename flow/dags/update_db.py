@@ -18,7 +18,7 @@ import aerospike
 # from flow.db_transfer import get_alternate_set, empty_aero_set, create_annoy_for_categories, create_annoy_for_filters, restart_server, mongo2aero
 # from flow.dags.utils import updatedb_args
 
-UPDATE_DB_DAG = DAG('update_db', get_dag_args('updatedb'))
+UPDATE_DB_DAG = DAG('update_db', default_args=get_dag_args('updatedb'))
 client = aerospike.client(CONFIGS['aerospike']).connect()
 
 

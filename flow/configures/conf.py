@@ -11,10 +11,10 @@ CONFIGS = {
     'log_file_count': 10,  # see below
     'mongo_host': 'localhost',
     'mongo_port': 27017,
-    'query_host': '172.31.22.177',
+    'query_host': '172.31.2.224',
     'query_port': 8000,
     'query_port_redis': 6379,
-    'segmentation_host': '172.31.2.224',
+    'segmentation_host': '172.31.21.193',
     'segmentation_port': 8000,
     'classification_host': '172.31.15.49',
     'classification_port': 8000,

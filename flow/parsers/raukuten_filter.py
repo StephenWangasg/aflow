@@ -8,6 +8,8 @@ class RaukutenFilter(parser.IRowFilter):
         cats1, cats2 = self.kwargs['cats']
         cats1 = [s.lower() for s in cats1]
         cats2 = [s.lower() for s in cats2]
+        if not self.check_field(row, ('primary_cat', 'product_name', 'secondary_cat')):
+            return False
         if row['primary_cat'].lower() not in cats1:
             self.kwargs['logger'].debug(
                 'primary_cat (%s) not in primary category', row['primary_cat'])
@@ -28,6 +30,6 @@ class RaukutenFilter(parser.IRowFilter):
             return False
         row['gender'] = -1 if 'gender' not in row else row['gender']
 
-        self.update(row, row['retail_price'], row['sale_price'], prod_name)
+        self.update(row, 'retail_price', 'sale_price', prod_name)
 
         return True

@@ -10,6 +10,8 @@ class YooxFilter(parser.IRowFilter):
 
     def filter(self, row):
         cats = self.cats
+        if not self.check_field(row, ('Category', 'Name', 'Gender')):
+            return False
         if not any(word in row['Category'].lower() for word in cats):
             self.kwargs['logger'].debug(
                 'Did not find category keywords in (%s)', row['Category'])
@@ -23,6 +25,6 @@ class YooxFilter(parser.IRowFilter):
         else:
             self.kwargs['logger'].debug('Gender invalid (%s)', row['Gender'])
             return False
-        self.update(row, row['Price'], row['PriceSale'], row['Name'])
+        self.update(row, 'Price', 'PriceSale', row['Name'])
 
         return True
