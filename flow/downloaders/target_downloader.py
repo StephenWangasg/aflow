@@ -1,30 +1,40 @@
+import os
+import sys
 import gzip
-
 from ftplib import FTP
+from .downloader import IDownloader, ZeroDownloadExcept
 
 
-def extract_file(download_file_path):
-    with gzip.open(download_file_path + '.gz', 'rb') as in_file, open(download_file_path, 'wb') as out_file:
-        out_file.write(in_file.read())
+class TargetDownloader(IDownloader):
+    'Target downloader'
 
+    def __init__(self, kwargs):
+        IDownloader.__init__(self, kwargs)
+        self.kwargs['download_file_gz'] = os.path.join(
+            kwargs['download_path'],
+            kwargs['site'] + '.' + kwargs['country'] + '.gz')
 
-def target_download(**kwargs):
-    download_file_path = kwargs['download_file']
+    def download(self):
+        try:
+            self.kwargs['download_result'] = 1
+            self.kwargs['downloaded'] = 0
+            fil = self.kwargs['download_file']
+            fgz = self.kwargs['download_file_gz']
+            ftp = FTP('products.impactradius.com')
+            ftp.login('ps-ftp_189204', 'CwHPeTx2kf')
+            ftp.cwd('Target')
+            ftp.retrbinary('RETR Target-Product-Feed-Commissioned-Items_IR.txt.gz',
+                           open(fgz, 'wb').write)
+            ftp.quit()
 
-    ftp = FTP('products.impactradius.com')     # connect to host, default port
-    ftp.login('ps-ftp_189204', 'CwHPeTx2kf')
-    ftp.cwd('Target') 
-    #ftp.retrlines('LIST')
-    print 'Downloading archive...'
-    ftp.retrbinary('RETR Target-Product-Feed-Commissioned-Items_IR.txt.gz', open(download_file_path + '.gz', 'wb').write)
-    ftp.quit()
+            with gzip.open(fgz, 'rb') as ifile, open(fil, 'wb') as ofile:
+                ofile.write(ifile.read())
+                self.kwargs['downloaded'] = 1
+            if not self.kwargs['downloaded']:
+                raise ZeroDownloadExcept
+        except:
+            self.kwargs['download_error'] = sys.exc_info()
+            self.kwargs.update({'download_result': 0})
 
-    # File has been downloaded, unzip it
-    print 'Extracting...'
-    extract_file(download_file_path)
-
-
-if __name__ == "__main__":
-    #print "target"
-    target_download(download_file='/images/models/feeds/targetglobal.txt')
-    #extract_file('/images/models/feeds/targetglobal.txt')
+    def transform(self):
+        pass

@@ -1,4 +1,9 @@
 *.pyc
 *.*~
 .idea/
+.vscode/
+.tmp/
+.cache/
+.mongo/
+tags
 webapp/webapp_uwsgi.ini

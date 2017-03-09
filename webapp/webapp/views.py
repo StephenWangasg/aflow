@@ -37,7 +37,7 @@ def get_db_status(request):
 @require_GET
 def export_db_status(request):
     response = HttpResponse(content_type='text/csv')
-    filename = 'db_status_' + datetime.now().isoformat()
+    filename = 'db_status_' + datetime.utcnow().isoformat()
     response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
 
     writer = csv.writer(response)
@@ -80,7 +80,7 @@ def get_gmvs(request):
 @require_GET
 def export_gmvs(request):
     response = HttpResponse(content_type='text/csv')
-    filename = 'gmvs_' + datetime.now().isoformat()
+    filename = 'gmvs_' + datetime.utcnow().isoformat()
     response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
 
     writer = csv.writer(response)
