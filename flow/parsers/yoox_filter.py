@@ -16,7 +16,7 @@ class YooxFilter(parser.IRowFilter):
             self.kwargs['logger'].debug(
                 'Did not find category keywords in (%s)', row['Category'])
             return False
-        if any(word in row['Name'].lower() for word in parser.INVALID_KEYWORDS):
+        if any(word.search(row['Name']) for word in parser.INVALID_KEYWORDS_RE):
             self.kwargs['logger'].debug(
                 'Invalid keywords in Name field (%s)', row['Name'])
             return False

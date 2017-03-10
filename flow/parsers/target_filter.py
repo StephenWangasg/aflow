@@ -11,13 +11,13 @@ class TargetFilter(parser.IRowFilter):
 
     def filter(self, row):
         cats = self.cats
-        if not self.check_field(row, ('Category','Product Name')):
+        if not self.check_field(row, ('Category', 'Product Name')):
             return False
         if not any(word in row['Category'].lower() for word in cats):
             self.kwargs['logger'].debug(
                 'Did not find category keywords in (%s)', row['Category'])
             return False
-        if any(word in row['Product Name'].lower() for word in parser.INVALID_KEYWORDS):
+        if any(word.search(row['Product Name']) for word in parser.INVALID_KEYWORDS_RE):
             self.kwargs['logger'].debug(
                 'Invalid keywords in Product Name field (%s)', row['Product Name'])
             return False

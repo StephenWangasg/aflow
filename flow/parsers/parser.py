@@ -1,6 +1,7 @@
 
 import sys
 import csv
+import re
 from datetime import datetime
 from flow.utilities.base import CBase
 
@@ -30,7 +31,8 @@ INVALID_KEYWORDS = [
     'paintball', 'alluminum', 'paddles', 'fishing', 'goggles', 'yoga'
 ]
 
-INVALID_KEYWORDS = [keyword.lower() for keyword in INVALID_KEYWORDS]
+INVALID_KEYWORDS = [re.compile(
+    r'\b' + keyword + r'\b', re.IGNORECASE) for keyword in INVALID_KEYWORDS]
 
 
 class IRowFilter(CBase):
@@ -46,13 +48,15 @@ class IRowFilter(CBase):
         raise NotImplementedError('subclass must override filter()!')
 
     def check_field(self, row, field_names):
+        '''Check if the field names is in the row(a dict)'''
         for field in field_names:
             if field not in row:
-                self.kwargs['logger'].warning('field {%s} not in row dict', field)
+                self.kwargs['logger'].warning(
+                    'field {%s} not in row dict', field)
                 self.kwargs['logger'].debug('row=%s', row)
                 return False
         return True
- 
+
     def __update_site_country(self, row):
         'adding site and country info'
         row.update({'site': self.kwargs['site'],
@@ -100,35 +104,25 @@ class Parser:
         rows will be filtered, valid rows are written
         into a new csv file'''
         try:
-            total_entries, invalid_entries = 0, 0
             start_time = datetime.utcnow()
             self.kwargs['logger'].info(
                 'Start parsing at %s', start_time.strftime("%X,%B %d,%Y"))
+            total_entries, invalid_entries = 0, 0
             dl_file = self.kwargs['download_file']
             ps_file = self.kwargs['parsed_file']
-            excp = False
             with open(dl_file, 'rb') as ifile, open(ps_file, 'wb') as ofile:
-                dialect = csv.Sniffer().sniff(ifile.read(1024))
-                for delimiter in (',', '\t'):
-                    excp = total_entries = invalid_entries = 0
-                    dialect.delimiter = delimiter
-                    ifile.seek(0)
-                    reader = csv.DictReader(ifile, restval='', dialect=dialect)
-                    writer = csv.writer(ofile, delimiter='\t', quotechar='"')
-                    writer.writerow(KEYS)
-                    for row in reader:
-                        total_entries += 1
-                        try:
-                            result = self.filter.filter(row)
-                            if result:
-                                writer.writerow([row[key] for key in KEYS])
-                            else:
-                                invalid_entries += 1
-                        except Exception as exc:
-                            excp = exc
-                            break
-            if isinstance(excp, Exception):
-                raise excp
+                reader = csv.DictReader(
+                    ifile, restval='', **self.kwargs['download_file_csv_dialect'])
+                writer = csv.writer(ofile, dialect='excel-tab')
+                writer.writerow(KEYS)
+                for row in reader:
+                    total_entries += 1
+                    result = self.filter.filter(row)
+                    if result:
+                        writer.writerow([row[key] for key in KEYS])
+                    else:
+                        invalid_entries += 1
+
             self.kwargs['logger'].info('Parser summary:')
             self.kwargs['logger'].info('Valid: %d, Invalid: %d, Total: %d',
                                        total_entries - invalid_entries,

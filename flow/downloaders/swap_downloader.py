@@ -27,8 +27,8 @@ class SwapDownloader(IDownloader):
                            open(fgz, 'wb').write)
             ftp.quit()
             with gzip.open(fgz, 'rb') as ifile, open(fil, 'wb') as ofile:
-                self.kwargs['downloaded'] = 1
                 ofile.write(ifile.read())
+                self.kwargs['downloaded'] = 1
             if not self.kwargs['downloaded']:
                 raise ZeroDownloadExcept
         except:

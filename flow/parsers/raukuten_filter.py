@@ -19,7 +19,7 @@ class RaukutenFilter(parser.IRowFilter):
             self.kwargs['logger'].warning(
                 'product_name not defined for (%s)', row['image_url'])
             return False
-        if any(word in prod_name for word in parser.INVALID_KEYWORDS):
+        if any(word.search(prod_name) for word in parser.INVALID_KEYWORDS_RE):
             self.kwargs['logger'].debug(
                 'Invalid keywords in product name (%s)', prod_name)
             return False

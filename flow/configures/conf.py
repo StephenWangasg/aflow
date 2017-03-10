@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 
+
 CONFIGS = {
     'log_path': '/images/models/logs/',
     # 'disable', 'debug', 'info', 'warning', 'error' or 'critical'
@@ -24,7 +25,14 @@ CONFIGS = {
     'download_path': '/images/models/feeds/',
     'feed_images_path': '/images/models/feed_images/',
     'attribute_tree': 'attribute_tree.json',
-    'extraction_threads' : 4,
+    'extraction_threads': 4,
+    # How the downloaded file is formated?
+    'download_file_csv_dialect': {'delimiter': ',',
+                                  'quotechar': '"',
+                                  'escapechar': None,
+                                  'doublequote': True,
+                                  'skipinitialspace': False,
+                                  'lineterminator': '\r\n', },
 }
 
 CATEGORIES = {
@@ -76,15 +84,13 @@ DAG_TIMEDELTA = {
     'target.global': 30,
     'zalora.singapore': 35,
     'zalora.malaysia': 40,
-    'yoox.singapore': 45,
-    'yoox.malaysia': 50,
-    'feature': 60,
-    'updatedb': 100,
-    'gmv': 120,
-    'db_status': 200
+    'feature': 45,
+    'updatedb': 180,
+    'db_status': 200,
+    'gmv': 220,
 }
 
-WEBSITES = ['lazada', 'asos', 'farfetch', 'yoox', 'zalora',
+WEBSITES = ['lazada', 'asos', 'farfetch', 'zalora',
             'swap', 'flipkart', 'target', 'luisaviaroma']
 
 COUNTRIES = ['singapore', 'global', 'indonesia', 'malaysia', 'india', 'us']

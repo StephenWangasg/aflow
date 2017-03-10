@@ -16,7 +16,7 @@ class LazadaFilter(parser.IRowFilter):
             self.kwargs['logger'].warning(
                 'product_name not defined for (%s)', row['image_url'])
             return False
-        if any(word in prod_name for word in parser.INVALID_KEYWORDS):
+        if any(word.search(prod_name) for word in parser.INVALID_KEYWORDS_RE):
             self.kwargs['logger'].debug(
                 'Invalid keywords in product name (%s)', prod_name)
             return False
@@ -25,10 +25,10 @@ class LazadaFilter(parser.IRowFilter):
         elif row['Category lv2'] == 'Men':
             row['gender'] = 'male'
         else:
-            self.kwargs['logger'].debug('Category lv2 (%s) is invalid value.', row['Category lv2'])
+            self.kwargs['logger'].debug(
+                'Category lv2 (%s) is invalid value.', row['Category lv2'])
             return False
 
         self.update(row, 'sale_price', 'discounted_price', prod_name)
 
         return True
-

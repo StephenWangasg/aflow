@@ -12,7 +12,9 @@ CALCULATE_GMV_DAG = DAG('calculate_gmv', default_args=conf.get_dag_args('gmv'))
 
 
 def calculate_gmv_single(site, location, accessor):
-    '''calculate gmv for a single website'''
+    '''calculate gmv for a single website.
+    Only sites that have at least one successfully
+    extracted product is shown in the gmv table'''
     records = accessor.products.find(
         {'site': site, 'location': location, 'extracted': True})
     gmv = 0.0

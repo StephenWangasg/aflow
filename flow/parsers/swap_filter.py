@@ -4,6 +4,7 @@ import parser
 
 class SwapFilter(parser.IRowFilter):
     'swap filter class'
+
     def __init__(self, kwargs):
         parser.IRowFilter.__init__(self, kwargs)
         self.cats = [s.lower() for s in self.kwargs['cats']]
@@ -16,7 +17,7 @@ class SwapFilter(parser.IRowFilter):
             self.kwargs['logger'].debug(
                 'Did not find category keywords in (%s)', row['ADVERTISERCATEGORY'])
             return False
-        if any(word in row['NAME'].lower() for word in parser.INVALID_KEYWORDS):
+        if any(word.search(row['NAME']) for word in parser.INVALID_KEYWORDS_RE):
             self.kwargs['logger'].debug(
                 'Invalid keywords in NAME field (%s)', row['NAME'])
             return False
