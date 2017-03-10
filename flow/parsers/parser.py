@@ -31,7 +31,7 @@ INVALID_KEYWORDS = [
     'paintball', 'alluminum', 'paddles', 'fishing', 'goggles', 'yoga'
 ]
 
-INVALID_KEYWORDS = [re.compile(
+INVALID_KEYWORDS_RE = [re.compile(
     r'\b' + keyword + r'\b', re.IGNORECASE) for keyword in INVALID_KEYWORDS]
 
 

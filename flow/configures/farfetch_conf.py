@@ -14,7 +14,7 @@ OP_KWARGS = {
                        'c24', 'c25', 'currency', 'c27', 'c28', 'c29', 'c30', 'c31',
                        'c32', 'c33', 'gender', 'c35', 'c36', 'c37', 'c38'),
     'cats': (
-        ('Clothing & Accessories'),
+        ('Clothing & Accessories',),
         ('Accessories', 'Accessory', 'Anklets', 'Backpacks', 'Bags', 'Belts', 'Boots', 'Bikinis',
          'Bracelets', 'Bras', 'Brogues', 'Ballerinas', 'Biometric', 'Bath', 'Conditioner',
          'Candles', 'Bedding', 'Barware', 'Artwork', 'Ashtrays', 'Buckles', 'Braces', 'Bridal',

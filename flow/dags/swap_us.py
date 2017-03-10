@@ -12,22 +12,25 @@ from flow.parsers.swap_filter import SwapFilter
 
 SWAP_US_DAG = DAG('swap_us', default_args=get_dag_args('swap.us'))
 
+SWAP_US_KWARGS=OP_KWARGS.copy()
+SWAP_US_KWARGS['download_file_csv_dialect']['skipinitialspace']=True
+
 TASK1 = PythonOperator(
-    task_id=get_task_id('download', OP_KWARGS),
+    task_id=get_task_id('download', SWAP_US_KWARGS),
     provide_context=True,
     python_callable=lambda **kwargs: DownloaderDirector.construct(
         SwapDownloader(kwargs)),
-    op_kwargs=OP_KWARGS,
+    op_kwargs=SWAP_US_KWARGS,
     dag=SWAP_US_DAG)
 
 
 TASK2 = PythonOperator(
-    task_id=get_task_id('parse', OP_KWARGS),
+    task_id=get_task_id('parse', SWAP_US_KWARGS),
     provide_context=True,
     python_callable=lambda **kwargs: Parser(SwapFilter(kwargs)).parse(),
-    op_kwargs=OP_KWARGS,
+    op_kwargs=SWAP_US_KWARGS,
     dag=SWAP_US_DAG)
 
-TASK3 = get_sub_dag(OP_KWARGS, SWAP_US_DAG)
+TASK3 = get_sub_dag(SWAP_US_KWARGS, SWAP_US_DAG)
 
 TASK1 >> TASK2 >> TASK3
